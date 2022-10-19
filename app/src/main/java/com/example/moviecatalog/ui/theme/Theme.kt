@@ -15,22 +15,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
-private val DarkColorScheme = darkColorScheme(
+private val MyColorScheme = lightColorScheme(
     primary = AccentColor,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    secondary = TextGrayColor,
+    onSecondary = White,
 
     background = BackgroundDarkColor,
-    surface = BackgroundDarkColor
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = AccentColor,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-
-    background = BackgroundDarkColor,
-    surface = BackgroundDarkColor
+    surface = BackgroundDarkColor,
+    outline = BorderGrayColor
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -44,24 +36,13 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun MovieCatalogTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = MyColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
         }
     }
 

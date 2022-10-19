@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -32,7 +31,7 @@ fun LaunchScreen(navController: NavController) {
                 }
             )
         )
-        delay(2000L)
+        delay(500L)
         navController.popBackStack()
         navController.navigate(Screen.SignIn.route)
     }
@@ -47,8 +46,8 @@ fun LaunchScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 75.dp)
-                .scale(scale.value),
-            contentScale = ContentScale.Crop
+                .scale(scale.value)
+            //contentScale = ContentScale.Crop
         )
     }
 }
