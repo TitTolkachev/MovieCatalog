@@ -1,19 +1,14 @@
 package com.example.moviecatalog.ui.theme
 
 import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 private val MyColorScheme = lightColorScheme(
     primary = AccentColor,
@@ -21,7 +16,7 @@ private val MyColorScheme = lightColorScheme(
     onSecondary = White,
 
     background = BackgroundDarkColor,
-    surface = BackgroundDarkColor,
+    surface = StatusBarColor,
     outline = BorderGrayColor
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -39,12 +34,22 @@ fun MovieCatalogTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = MyColorScheme
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-        }
-    }
+    val activity = LocalView.current.context as Activity
+    val backgroundArgb = MaterialTheme.colorScheme.surface.toArgb()
+    activity.window.statusBarColor = backgroundArgb
+    activity.window.navigationBarColor = backgroundArgb
+
+    //activity.window.decorView.apply {
+    //    systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+    //}
+
+    val windowInsetsController =
+        ViewCompat.getWindowInsetsController(activity.window.decorView) ?: return
+    // Configure the behavior of the hidden system bars
+    windowInsetsController.systemBarsBehavior =
+        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    // Hide both the status bar and the navigation bar
+    windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
     MaterialTheme(
         colorScheme = colorScheme,
