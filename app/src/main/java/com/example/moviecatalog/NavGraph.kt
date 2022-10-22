@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.moviecatalog.view.LaunchScreen
+import com.example.moviecatalog.view.SignInScreen
+import com.example.moviecatalog.view.SignUpScreen
 
 @ExperimentalMaterial3Api
 @Composable
@@ -24,6 +27,11 @@ fun SetUpNavGraph(
             route = Screen.SignIn.route
         ){
             SignInScreen()
+        }
+        composable(
+            route = Screen.SignUp.route
+        ){
+            SignUpScreen()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.moviecatalog
+package com.example.moviecatalog.view
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
@@ -14,6 +14,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.moviecatalog.R
+import com.example.moviecatalog.Screen
 import kotlinx.coroutines.delay
 
 @Composable
@@ -33,7 +35,8 @@ fun LaunchScreen(navController: NavController) {
         )
         delay(500L)
         navController.popBackStack()
-        navController.navigate(Screen.SignIn.route)
+        //navController.navigate(Screen.SignIn.route)
+        navController.navigate(Screen.SignUp.route)
     }
     Box(
         modifier = Modifier
