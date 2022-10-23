@@ -20,12 +20,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.moviecatalog.R
+import com.example.moviecatalog.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 @ExperimentalMaterial3Api
 @Composable
-fun SignInScreen() {
+fun SignInScreen(navController: NavController) {
 
     //ВНИМАНИЕ!!!
     //Переменные ниже нужно будет вынести отдельно!!!
@@ -72,7 +74,7 @@ fun SignInScreen() {
             ) {
                 NewOutlinedButton(isValidInput, "Войти")
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate(Screen.SignUp.route)},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
@@ -135,7 +137,6 @@ fun NewOutlinedTextField(
             KeyboardOptions(keyboardType = KeyboardType.Password)
         else
             KeyboardOptions.Default
-
     )
 }
 

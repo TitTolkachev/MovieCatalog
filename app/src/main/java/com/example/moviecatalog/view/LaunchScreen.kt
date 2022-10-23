@@ -35,8 +35,8 @@ fun LaunchScreen(navController: NavController) {
         )
         delay(500L)
         navController.popBackStack()
-        //navController.navigate(Screen.SignIn.route)
-        navController.navigate(Screen.SignUp.route)
+        navController.navigate(Screen.SignIn.route)
+        //navController.navigate(Screen.SignUp.route)
     }
     Box(
         modifier = Modifier
