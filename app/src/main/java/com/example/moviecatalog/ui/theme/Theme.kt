@@ -14,6 +14,7 @@ private val MyColorScheme = lightColorScheme(
     primary = AccentColor,
     secondary = TextGrayColor,
     onSecondary = White,
+    tertiary = BaseWhite,
 
     background = BackgroundDarkColor,
     surface = StatusBarColor,

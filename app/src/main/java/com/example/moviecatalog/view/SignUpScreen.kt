@@ -50,9 +50,14 @@ fun SignUpScreen(navController: NavController) {
     val passwordRepeat = remember {
         mutableStateOf("")
     }
-
     val datePicked = remember {
         mutableStateOf("")
+    }
+    val isMaleChosen = remember {
+        mutableStateOf(false)
+    }
+    val isFemaleChosen = remember {
+        mutableStateOf(false)
     }
 
     val localContext = LocalContext.current
@@ -118,6 +123,7 @@ fun SignUpScreen(navController: NavController) {
                 NewOutlinedTextField(password, "Пароль", true)
                 NewOutlinedTextField(passwordRepeat, "Подтвердите пароль", true)
                 NewDatePicker(localContext, datePicked)
+                NewGenderCheckField(isMaleChosen = isMaleChosen, isFemaleChosen = isFemaleChosen)
             }
 
             Column(
@@ -165,7 +171,7 @@ fun NewDatePicker(context: Context, date: MutableState<String>) {
         context,
         { _: DatePicker, Year: Int, Month: Int, DayOfMonth: Int ->
             date.value = if (DayOfMonth < 10) "0$DayOfMonth." else "$DayOfMonth."
-            date.value += if (Month < 9) "0${Month+1}." else "${Month+1}."
+            date.value += if (Month < 9) "0${Month + 1}." else "${Month + 1}."
             date.value += Year.toString()
         }, year, month, day
     )
@@ -213,4 +219,71 @@ fun NewDatePicker(context: Context, date: MutableState<String>) {
             )
         }
     }
+}
+
+
+@Composable
+fun NewGenderCheckField(
+    isMaleChosen: MutableState<Boolean>,
+    isFemaleChosen: MutableState<Boolean>
+) {
+
+    Row(modifier = Modifier) {
+        OutlinedButton(
+            onClick = {
+                isMaleChosen.value = true
+                isFemaleChosen.value = false
+            },
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = if (isMaleChosen.value) MaterialTheme.colorScheme.primary else Color.Transparent
+            ),
+            modifier = Modifier
+                .height(44.dp)
+                .weight(1f)
+                .offset(x = 0.5.dp),
+            shape = RoundedCornerShape(
+                topStart = 8.dp,
+                topEnd = 0.dp,
+                bottomStart = 8.dp,
+                bottomEnd = 0.dp
+            )
+        ) {
+            Text(
+                text = "Мужчина",
+                fontFamily = ibmPlexSansFamily,
+                fontSize = 14.sp,
+                modifier = Modifier,
+                color = if (isMaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
+            )
+        }
+
+        OutlinedButton(
+            onClick = {
+                isMaleChosen.value = false
+                isFemaleChosen.value = true
+            },
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = if (isFemaleChosen.value) MaterialTheme.colorScheme.primary else Color.Transparent
+            ),
+            modifier = Modifier
+                .height(44.dp)
+                .weight(1f)
+                .offset(x = ((-0.5).dp)),
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 8.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 8.dp
+            )
+        ) {
+            Text(
+                text = "Женщина",
+                fontFamily = ibmPlexSansFamily,
+                fontSize = 14.sp,
+                modifier = Modifier,
+                color = if (isFemaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+
 }
