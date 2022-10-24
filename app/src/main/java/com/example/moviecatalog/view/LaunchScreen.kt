@@ -35,8 +35,9 @@ fun LaunchScreen(navController: NavController) {
         )
         delay(500L)
         navController.popBackStack()
-        navController.navigate(Screen.SignIn.route)
+        navController.navigate(Screen.SignIn.route+"/false")
         //navController.navigate(Screen.SignUp.route)
+        //navController.navigate(Screen.Main.route)
     }
     Box(
         modifier = Modifier
@@ -50,7 +51,6 @@ fun LaunchScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(horizontal = 75.dp)
                 .scale(scale.value)
-            //contentScale = ContentScale.Crop
         )
     }
 }
