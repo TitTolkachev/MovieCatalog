@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.Screen
+import com.example.moviecatalog.navigation.Screen
 import kotlinx.coroutines.delay
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.moviecatalog
+package com.example.moviecatalog.navigation.nav_graph
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,10 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.moviecatalog.navigation.ROOT_GRAPH_ROUTE
+import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.view.LaunchScreen
-import com.example.moviecatalog.view.MainScreen
-import com.example.moviecatalog.view.SignInScreen
-import com.example.moviecatalog.view.SignUpScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -24,27 +23,15 @@ fun SetUpNavGraph(
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.Launch.route
+        startDestination = Screen.Launch.route,
+        route = ROOT_GRAPH_ROUTE
     ){
         composable(
             route = Screen.Launch.route
         ){
             LaunchScreen(navController)
         }
-        composable(
-            route = Screen.SignIn.route,
-        ){
-            SignInScreen(navController)
-        }
-        composable(
-            route = Screen.SignUp.route
-        ){
-            SignUpScreen(navController)
-        }
-        composable(
-            route = Screen.Main.route
-        ){
-            MainScreen(navController)
-        }
+        homeNavGraph(navController = navController)
+        authNavGraph(navController = navController)
     }
 }

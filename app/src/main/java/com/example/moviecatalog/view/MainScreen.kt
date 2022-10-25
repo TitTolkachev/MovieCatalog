@@ -36,7 +36,10 @@ fun MainScreen(navController: NavController) {
         R.drawable.featured
     )
 
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         item {
             Image(
                 painter = painterResource(id = R.drawable.featured),
@@ -59,7 +62,6 @@ fun MainScreen(navController: NavController) {
                     fontSize = 24.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
-
 
                 //--------------------
                 //--------------------

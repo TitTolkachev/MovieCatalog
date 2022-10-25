@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.moviecatalog.navigation.nav_graph.SetUpNavGraph
 import com.example.moviecatalog.ui.theme.MovieCatalogTheme
 import kotlinx.coroutines.*
 

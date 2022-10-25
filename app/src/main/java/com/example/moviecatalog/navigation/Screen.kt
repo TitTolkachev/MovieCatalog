@@ -1,4 +1,8 @@
-package com.example.moviecatalog
+package com.example.moviecatalog.navigation
+
+const val ROOT_GRAPH_ROUTE = "root"
+const val AUTH_GRAPH_ROUTE = "auth"
+const val HOME_GRAPH_ROUTE = "home"
 
 sealed class Screen(val route: String){
     object Launch: Screen(route = "launch_screen")

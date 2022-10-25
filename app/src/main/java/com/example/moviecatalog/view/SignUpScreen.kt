@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.Screen
+import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
