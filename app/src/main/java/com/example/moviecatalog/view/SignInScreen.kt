@@ -30,7 +30,7 @@ import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 @ExperimentalMaterial3Api
 @Composable
-fun SignInScreen(navController: NavController, animMode: Boolean) {
+fun SignInScreen(navController: NavController) {
 
     //ВНИМАНИЕ!!!
     //Переменные ниже нужно будет вынести отдельно!!!
@@ -45,13 +45,12 @@ fun SignInScreen(navController: NavController, animMode: Boolean) {
     val image = painterResource(id = R.drawable.group_57)
 
     val scale = remember {
-        Animatable(if (animMode) 0f else 1f)
+        Animatable(0f)
     }
     val alpha = remember {
-        Animatable(if (animMode) 0f else 1f)
+        Animatable(0f)
     }
-    if (animMode)
-        EntryAnimations(scale, alpha)
+    EntryAnimations(scale, alpha)
 
 
     Image(
@@ -89,8 +88,11 @@ fun SignInScreen(navController: NavController, animMode: Boolean) {
                 isValidInput,
                 "Войти"
             ) {
-                navController.popBackStack(Screen.SignIn.route + "/${false}", true)
-                navController.navigate(Screen.Main.route)
+                navController.navigate(Screen.Main.route){
+                    popUpTo(Screen.SignIn.route){
+                        inclusive = true
+                    }
+                }
             }
             Button(
                 onClick = {

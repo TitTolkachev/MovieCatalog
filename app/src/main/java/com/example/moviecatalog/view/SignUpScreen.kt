@@ -220,14 +220,17 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
             isValidInput,
             "Зарегистрироваться"
         ) {
-            navController.popBackStack(Screen.SignIn.route, true)
-            navController.navigate(Screen.Main.route)
+            navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.SignIn.route) {
+                    inclusive = true
+                }
+            }
         }
 
         Button(
             onClick = {
                 if (isClickable)
-                    navController.navigate(Screen.SignIn.route + "/${true}")
+                    navController.popBackStack(Screen.SignIn.route, false)
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -6,5 +6,18 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:colorBackground">@color/darkBrown</item>
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
+    </style>
+
+    <style name="MyDatePickerDialogTheme" parent="android:Theme.Material.Dialog">
+        <item name="android:datePickerStyle">@style/MyDatePickerStyle</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorBackground">@color/darkBrown</item>
+        <item name="android:calendarTextColor">@color/gray</item>
+    </style>
+
+    <style name="MyDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        <item name="android:headerBackground">@color/accent</item>
+        <item name="android:background">@color/darkBrown</item>
     </style>
 </resources>
