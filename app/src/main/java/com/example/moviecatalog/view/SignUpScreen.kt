@@ -178,7 +178,7 @@ private fun EntryAnimations(
         scale.animateTo(
             targetValue = 0f,
             animationSpec = tween(
-                durationMillis = 500,
+                durationMillis = 300,
                 easing = LinearOutSlowInEasing
             )
         )
@@ -187,8 +187,8 @@ private fun EntryAnimations(
         alpha.animateTo(
             targetValue = 1f,
             animationSpec = tween(
-                durationMillis = 700,
-                easing = FastOutLinearInEasing
+                durationMillis = 800,
+                easing = FastOutSlowInEasing
             )
         )
     }
