@@ -241,7 +241,9 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
             )
         ) {
             Text(
-                text = "У меня уже есть аккаунт"
+                text = "У меня уже есть аккаунт",
+                fontFamily = ibmPlexSansFamily,
+                fontSize = 14.sp,
             )
         }
     }
@@ -348,7 +350,6 @@ fun NewGenderCheckField(
                 text = "Мужчина",
                 fontFamily = ibmPlexSansFamily,
                 fontSize = 14.sp,
-                modifier = Modifier,
                 color = if (isMaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             )
         }
@@ -376,7 +377,6 @@ fun NewGenderCheckField(
                 text = "Женщина",
                 fontFamily = ibmPlexSansFamily,
                 fontSize = 14.sp,
-                modifier = Modifier,
                 color = if (isFemaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             )
         }

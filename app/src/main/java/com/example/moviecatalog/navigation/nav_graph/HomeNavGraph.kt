@@ -11,6 +11,7 @@ import androidx.navigation.navigation
 import com.example.moviecatalog.navigation.HOME_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.view.MainScreen
+import com.example.moviecatalog.view.ProfileScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @ExperimentalFoundationApi
@@ -28,6 +29,11 @@ fun NavGraphBuilder.homeNavGraph(
             route = Screen.Main.route,
         ){
             MainScreen(navController)
+        }
+        composable(
+            route = Screen.Profile.route,
+        ){
+            ProfileScreen(navController)
         }
     }
 }

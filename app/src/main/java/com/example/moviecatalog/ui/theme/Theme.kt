@@ -16,6 +16,7 @@ private val MyColorScheme = lightColorScheme(
     onSecondary = White,
     tertiary = BaseWhite,
 
+    primaryContainer = BottomNavGrayColor,
     background = BackgroundDarkColor,
     surface = StatusBarColor,
     outline = BorderGrayColor
@@ -46,10 +47,8 @@ fun MovieCatalogTheme(
 
     val windowInsetsController =
         ViewCompat.getWindowInsetsController(activity.window.decorView) ?: return
-    // Configure the behavior of the hidden system bars
     windowInsetsController.systemBarsBehavior =
         WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    // Hide both the status bar and the navigation bar
     windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
     MaterialTheme(
