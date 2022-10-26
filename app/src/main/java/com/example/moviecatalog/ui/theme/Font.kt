@@ -8,5 +8,6 @@ import com.example.moviecatalog.R
 
 val ibmPlexSansFamily = FontFamily(
     Font(R.font.ibm_plex_sans, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.ibm_plex_sans_medium, FontWeight.Medium, FontStyle.Normal),
     Font(R.font.ibm_plex_sans_bold, FontWeight.Bold, FontStyle.Normal)
 )

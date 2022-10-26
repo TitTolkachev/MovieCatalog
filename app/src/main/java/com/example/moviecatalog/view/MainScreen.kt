@@ -140,7 +140,7 @@ private fun GalleryItem() {
                 .padding(start = 16.dp)
                 .defaultMinSize(minHeight = 144.dp)
         ) {
-            Column() {
+            Column {
                 Text(
                     text = "Люцифер",
                     modifier = Modifier,
@@ -155,6 +155,8 @@ private fun GalleryItem() {
                     modifier = Modifier
                         .padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -163,6 +165,8 @@ private fun GalleryItem() {
                     modifier = Modifier
                         .padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -181,6 +185,8 @@ private fun GalleryItem() {
                         .align(Alignment.Center)
                         .offset(y = (-1).dp),
                     fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -232,6 +238,8 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
                 Text(
                     text = "Главная",
                     fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal,
                     fontSize = 14.sp
                 )
             }
@@ -271,6 +279,8 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
                 Text(
                     text = "Профиль",
                     fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal,
                     fontSize = 14.sp
                 )
             }

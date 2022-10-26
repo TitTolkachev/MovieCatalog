@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -82,14 +84,14 @@ fun SignInScreen(navController: NavController) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(bottom = 16.dp)
+                .padding(bottom = 14.dp)
         ) {
             NewOutlinedButton(
                 isValidInput,
                 "Войти"
             ) {
-                navController.navigate(Screen.Main.route){
-                    popUpTo(Screen.SignIn.route){
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.SignIn.route) {
                         inclusive = true
                     }
                 }
@@ -101,14 +103,18 @@ fun SignInScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(32.dp),
+                    .height(38.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(
-                    text = "Регистрация"
+                    text = "Регистрация",
+                    fontFamily = ibmPlexSansFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal,
+                    fontSize = 16.sp,
                 )
             }
         }
@@ -224,8 +230,8 @@ fun NewOutlinedButton(isValidInput: Boolean, buttonText: String, onClick: () -> 
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
-            .padding(bottom = 8.dp),
+            .padding(bottom = 8.dp)
+            .height(44.dp),
         shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -235,7 +241,11 @@ fun NewOutlinedButton(isValidInput: Boolean, buttonText: String, onClick: () -> 
         )
     ) {
         Text(
-            text = buttonText
+            text = buttonText,
+            fontFamily = ibmPlexSansFamily,
+            fontWeight = FontWeight.Medium,
+            fontStyle = FontStyle.Normal,
+            fontSize = 16.sp,
         )
     }
 }

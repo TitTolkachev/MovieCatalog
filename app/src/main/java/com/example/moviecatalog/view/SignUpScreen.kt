@@ -109,7 +109,7 @@ fun SignUpScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(bottom = 32.dp + 44.dp + 8.dp + 32.dp)
+                .padding(bottom = 14.dp + 44.dp + 8.dp + 38.dp)
                 .alpha(alpha.value)
         ) {
             Column(
@@ -134,14 +134,14 @@ fun SignUpScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 32.dp)
                 ) {
                     NewOutlinedTextField(login, "Логин", false)
                     NewOutlinedTextField(email, "E-mail", false)
                     NewOutlinedTextField(name, "Имя", false)
                     NewOutlinedTextField(password, "Пароль", true)
                     NewOutlinedTextField(passwordRepeat, "Подтвердите пароль", true)
-                    NewDatePicker(localContext, datePicked)
+                    NewDatePicker(localContext, datePicked, "Дата рождения")
                     NewGenderCheckField(
                         isMaleChosen = isMaleChosen,
                         isFemaleChosen = isFemaleChosen
@@ -155,7 +155,7 @@ fun SignUpScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 14.dp)
                 .padding(horizontal = 16.dp)
         ) {
             BottomButtons(
@@ -234,7 +234,7 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp),
+                .height(38.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.primary
@@ -243,7 +243,9 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
             Text(
                 text = "У меня уже есть аккаунт",
                 fontFamily = ibmPlexSansFamily,
-                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                fontStyle = FontStyle.Normal,
+                fontSize = 16.sp,
             )
         }
     }
@@ -253,7 +255,11 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
 @ExperimentalMaterial3Api
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun NewDatePicker(context: Context, date: MutableState<String>) {
+fun NewDatePicker(
+    context: Context,
+    date: MutableState<String>,
+    placeHolderText: String
+) {
 
     val year: Int
     val month: Int
@@ -300,8 +306,10 @@ fun NewDatePicker(context: Context, date: MutableState<String>) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = if (date.value == "") "Дата рождения" else date.value,
+                text = if (date.value == "") placeHolderText else date.value,
                 fontFamily = ibmPlexSansFamily,
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(start = 16.dp),
                 textAlign = TextAlign.Start,
@@ -349,6 +357,8 @@ fun NewGenderCheckField(
             Text(
                 text = "Мужчина",
                 fontFamily = ibmPlexSansFamily,
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal,
                 fontSize = 14.sp,
                 color = if (isMaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             )
@@ -376,10 +386,11 @@ fun NewGenderCheckField(
             Text(
                 text = "Женщина",
                 fontFamily = ibmPlexSansFamily,
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal,
                 fontSize = 14.sp,
                 color = if (isFemaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             )
         }
     }
-
 }
