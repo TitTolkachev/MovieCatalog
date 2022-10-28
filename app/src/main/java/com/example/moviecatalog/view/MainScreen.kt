@@ -1,17 +1,9 @@
 package com.example.moviecatalog.view
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +20,15 @@ import com.example.moviecatalog.R
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
+import androidx.compose.material3.*
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlin.math.absoluteValue
+
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen(navController: NavController) {
 
-    val movies: MutableList<Int> = mutableListOf(
+    val movies = listOf(
         R.drawable.featured,
         R.drawable.featured,
         R.drawable.featured,
@@ -40,10 +36,11 @@ fun MainScreen(navController: NavController) {
         R.drawable.featured,
         R.drawable.featured
     )
+    val items = movies.mapIndexed { i, s -> ImageItem(i, s) }
+    val favouritesState = rememberLazyListState()
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             modifier = Modifier
@@ -54,8 +51,7 @@ fun MainScreen(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.featured),
                     contentDescription = "Poster",
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             item {
@@ -73,17 +69,31 @@ fun MainScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    //--------------------
-                    //--------------------
-                    //Переделать на Pager
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .padding(top = 22.dp)
                             .animateItemPlacement()
+                            .height(172.dp),
+                        state = favouritesState,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
-                        items(movies) { movie ->
-                            NewMoviePreview(id = movie)
+                        items(items, key = { it.id }) { item ->
+                            NewMoviePreview(
+                                item.imageId,
+                                Modifier
+                                    .graphicsLayer {
+                                        val value =
+                                            (1.2F - (favouritesState.layoutInfo.normalizedItemPosition(
+                                                item.id
+                                            ).absoluteValue) * 0.05F)
+                                                .coerceAtMost(1.2F)
+                                                .coerceAtLeast(1F)
+                                        scaleX = value
+                                        scaleY = value
+                                    }
+                            )
                         }
                     }
                 }
@@ -92,8 +102,7 @@ fun MainScreen(navController: NavController) {
             item {
                 Text(
                     text = "Галерея",
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 32.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(start = 16.dp, top = 32.dp, bottom = 8.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Normal,
@@ -108,8 +117,7 @@ fun MainScreen(navController: NavController) {
         }
 
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NewBottomNavigationBar(navController = navController, true)
         }
@@ -152,8 +160,7 @@ private fun GalleryItem() {
                 )
                 Text(
                     text = "1999 • США",
-                    modifier = Modifier
-                        .padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal,
@@ -162,8 +169,7 @@ private fun GalleryItem() {
                 )
                 Text(
                     text = "драма, криминал",
-                    modifier = Modifier
-                        .padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal,
@@ -208,31 +214,21 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
     ) {
         Button(
             onClick = {
-                if (!isMainScreen)
-                    navController.popBackStack()
-            },
-            modifier = Modifier
+                if (!isMainScreen) navController.popBackStack()
+            }, modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
+                .fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor =
-                if (isMainScreen)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.outline
+                contentColor = if (isMainScreen) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outline
             )
         ) {
             Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter =
-                    if (isMainScreen)
-                        painterResource(id = R.drawable.homeiconaccent)
-                    else
-                        painterResource(id = R.drawable.homeicon),
+                    painter = if (isMainScreen) painterResource(id = R.drawable.homeiconaccent)
+                    else painterResource(id = R.drawable.homeicon),
                     contentDescription = "Main Screen Icon"
                 )
                 Text(
@@ -245,8 +241,7 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
             }
         }
         Button(
-            onClick =
-            {
+            onClick = {
                 if (isMainScreen) {
                     navController.navigate(Screen.Profile.route)
                 }
@@ -257,23 +252,16 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
                 .background(Color.Transparent),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor =
-                if (isMainScreen)
-                    MaterialTheme.colorScheme.outline
-                else
-                    MaterialTheme.colorScheme.primary
+                contentColor = if (isMainScreen) MaterialTheme.colorScheme.outline
+                else MaterialTheme.colorScheme.primary
             )
         ) {
             Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter =
-                    if (isMainScreen)
-                        painterResource(id = R.drawable.profileicon)
-                    else
-                        painterResource(id = R.drawable.profileiconacent),
+                    painter = if (isMainScreen) painterResource(id = R.drawable.profileicon)
+                    else painterResource(id = R.drawable.profileiconacent),
                     contentDescription = "Profile Screen Icon"
                 )
                 Text(
@@ -290,15 +278,26 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
 
 
 @Composable
-fun NewMoviePreview(id: Int) {
-    Image(
-        painter = painterResource(id = id),
-        contentDescription = "Movie $id",
-        modifier = Modifier
-            .padding(start = 16.dp)
-            .width(100.dp)
-            .height(144.dp)
-            .clip(shape = RoundedCornerShape(8.dp)),
-        contentScale = ContentScale.Crop
-    )
+fun NewMoviePreview(
+    id: Int, modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        Image(
+            painter = painterResource(id = id),
+            contentDescription = "Movie $id",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .width(100.dp)
+                .height(144.dp)
+                .clip(shape = RoundedCornerShape(8.dp))
+        )
+    }
 }
+
+fun LazyListLayoutInfo.normalizedItemPosition(key: Any): Float =
+    visibleItemsInfo.firstOrNull { it.key == key }?.let {
+        val center = 60F
+        (it.offset.toFloat() - center) / center
+    } ?: 0F
+
+data class ImageItem(val id: Int, val imageId: Int)
