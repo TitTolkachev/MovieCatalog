@@ -35,7 +35,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun MainScreen(navController: NavController) {
 
-    val movies = remember {
+    val favouriteMovies = remember {
         mutableStateListOf(
             R.drawable.featured,
             R.drawable.featured,
@@ -45,10 +45,25 @@ fun MainScreen(navController: NavController) {
             R.drawable.featured
         )
     }
-    val items = remember {
-        movies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
+    val favouriteItems = remember {
+        favouriteMovies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
     }
     val favouritesState = rememberLazyListState()
+
+
+    val galleryMovies = listOf(
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured,
+        R.drawable.featured
+    )
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -86,7 +101,7 @@ fun MainScreen(navController: NavController) {
                             .padding(top = 22.dp)
                             .animateItemPlacement()
                             .height(
-                                if (items.size != 0)
+                                if (favouriteItems.size != 0)
                                     172.dp
                                 else
                                     0.dp
@@ -94,7 +109,7 @@ fun MainScreen(navController: NavController) {
                         state = favouritesState,
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        items(items, key = { it.id }) { item ->
+                        items(favouriteItems, key = { it.id }) { item ->
                             val value =
                                 (1.2F - (favouritesState.layoutInfo.normalizedItemPosition(
                                     item.id
@@ -110,9 +125,10 @@ fun MainScreen(navController: NavController) {
                                         scaleY = value
                                     }
                                     .padding(horizontal = ((value - 1F) * 50.dp) + 8.dp),
-                                movies,
-                                items,
-                                item
+                                favouriteMovies,
+                                favouriteItems,
+                                item,
+                                navController
                             )
                         }
                     }
@@ -131,8 +147,8 @@ fun MainScreen(navController: NavController) {
                 )
             }
 
-            items(10) {
-                GalleryItem()
+            items(galleryMovies) {item->
+                GalleryItem(item, navController)
             }
         }
 
@@ -147,12 +163,15 @@ fun MainScreen(navController: NavController) {
 
 
 @Composable
-private fun GalleryItem() {
+private fun GalleryItem(item: Int, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
+            .clickable {
+                navController.navigate(Screen.MovieScreen.route + "/${item}")
+            }
     ) {
         Image(
             painter = painterResource(id = R.drawable.featured),
@@ -302,7 +321,8 @@ fun NewMoviePreview(
     modifier: Modifier = Modifier,
     movies: MutableList<Int>,
     items: SnapshotStateList<ImageItem>,
-    item: ImageItem
+    item: ImageItem,
+    navController: NavController
 ) {
     Box(modifier = modifier) {
         Image(
@@ -313,6 +333,9 @@ fun NewMoviePreview(
                 .width(100.dp)
                 .height(144.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
+                .clickable {
+                    navController.navigate(Screen.MovieScreen.route + "/${item.imageId}")
+                }
         )
         Image(
             painter = painterResource(id = R.drawable.deletefromfavourites),
