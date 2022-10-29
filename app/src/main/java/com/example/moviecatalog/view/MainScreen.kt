@@ -299,7 +299,7 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
             ) {
                 Image(
                     painter = if (isMainScreen) painterResource(id = R.drawable.profileicon)
-                    else painterResource(id = R.drawable.profileiconacent),
+                    else painterResource(id = R.drawable.profileiconaccent),
                     contentDescription = "Profile Screen Icon"
                 )
                 Text(
