@@ -22,6 +22,10 @@ import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 import androidx.compose.material3.*
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.times
 import kotlin.math.absoluteValue
@@ -31,15 +35,19 @@ import kotlin.math.absoluteValue
 @Composable
 fun MainScreen(navController: NavController) {
 
-    val movies = listOf(
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured
-    )
-    val items = movies.mapIndexed { i, s -> ImageItem(i, s) }
+    val movies = remember {
+        mutableStateListOf(
+            R.drawable.featured,
+            R.drawable.featured,
+            R.drawable.featured,
+            R.drawable.featured,
+            R.drawable.featured,
+            R.drawable.featured
+        )
+    }
+    val items = remember {
+        movies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
+    }
     val favouritesState = rememberLazyListState()
 
     Box(
@@ -77,9 +85,13 @@ fun MainScreen(navController: NavController) {
                             .fillMaxWidth()
                             .padding(top = 22.dp)
                             .animateItemPlacement()
-                            .height(172.dp),
+                            .height(
+                                if (items.size != 0)
+                                    172.dp
+                                else
+                                    0.dp
+                            ),
                         state = favouritesState,
-                        //horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         items(items, key = { it.id }) { item ->
@@ -97,7 +109,10 @@ fun MainScreen(navController: NavController) {
                                         scaleX = value
                                         scaleY = value
                                     }
-                                    .padding(horizontal = ((value-1F)*50.dp) + 8.dp)
+                                    .padding(horizontal = ((value - 1F) * 50.dp) + 8.dp),
+                                movies,
+                                items,
+                                item
                             )
                         }
                     }
@@ -283,7 +298,11 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
 
 @Composable
 fun NewMoviePreview(
-    id: Int, modifier: Modifier = Modifier
+    id: Int,
+    modifier: Modifier = Modifier,
+    movies: MutableList<Int>,
+    items: SnapshotStateList<ImageItem>,
+    item: ImageItem
 ) {
     Box(modifier = modifier) {
         Image(
@@ -301,6 +320,10 @@ fun NewMoviePreview(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 4.dp, end = 4.dp)
+                .clickable {
+                    movies.remove(item.imageId)
+                    items.remove(item)
+                }
         )
     }
 }
