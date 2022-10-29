@@ -38,6 +38,7 @@ fun LaunchScreen(navController: NavController) {
         //navController.navigate(Screen.SignIn.route)
         //navController.navigate(Screen.SignUp.route)
         navController.navigate(Screen.Main.route)
+        //navController.navigate(Screen.MovieScreen.route+"/${R.drawable.featured}")
     }
     Box(
         modifier = Modifier

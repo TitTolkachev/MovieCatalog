@@ -11,3 +11,7 @@ val ibmPlexSansFamily = FontFamily(
     Font(R.font.ibm_plex_sans_medium, FontWeight.Medium, FontStyle.Normal),
     Font(R.font.ibm_plex_sans_bold, FontWeight.Bold, FontStyle.Normal)
 )
+
+val montserratFamily = FontFamily(
+    Font(R.font.montserrat_medium, FontWeight.Medium, FontStyle.Normal)
+)

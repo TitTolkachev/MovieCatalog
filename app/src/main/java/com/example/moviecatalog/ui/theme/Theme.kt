@@ -15,6 +15,7 @@ private val MyColorScheme = lightColorScheme(
     secondary = TextGrayColor,
     onSecondary = White,
     tertiary = BaseWhite,
+    onTertiary = GrayB3Color,
 
     primaryContainer = BottomNavGrayColor,
     background = BackgroundDarkColor,
