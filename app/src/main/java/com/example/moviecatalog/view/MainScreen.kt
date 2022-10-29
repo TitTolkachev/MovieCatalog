@@ -182,8 +182,7 @@ private fun GalleryItem() {
                     .clip(shape = RoundedCornerShape(16.dp))
                     .background(Color.DarkGray)
                     .width(56.dp)
-                    .height(28.dp),
-                //contentAlignment = Alignment.Center
+                    .height(28.dp)
             ) {
                 Text(
                     text = "9.0",
@@ -290,6 +289,13 @@ fun NewMoviePreview(
                 .width(100.dp)
                 .height(144.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
+        )
+        Image(
+            painter = painterResource(id = R.drawable.deletefromfavourites),
+            contentDescription = "Delete from favourites icon",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 4.dp, end = 4.dp)
         )
     }
 }
