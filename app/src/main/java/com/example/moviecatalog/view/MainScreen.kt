@@ -1,5 +1,6 @@
 package com.example.moviecatalog.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -22,8 +23,10 @@ import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.times
 import kotlin.math.absoluteValue
 
+@SuppressLint("FrequentlyChangedStateReadInComposition")
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen(navController: NavController) {
@@ -76,23 +79,25 @@ fun MainScreen(navController: NavController) {
                             .animateItemPlacement()
                             .height(172.dp),
                         state = favouritesState,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
+                        //horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         items(items, key = { it.id }) { item ->
+                            val value =
+                                (1.2F - (favouritesState.layoutInfo.normalizedItemPosition(
+                                    item.id
+                                ).absoluteValue) * 0.05F)
+                                    .coerceAtMost(1.2F)
+                                    .coerceAtLeast(1F)
+
                             NewMoviePreview(
                                 item.imageId,
                                 Modifier
                                     .graphicsLayer {
-                                        val value =
-                                            (1.2F - (favouritesState.layoutInfo.normalizedItemPosition(
-                                                item.id
-                                            ).absoluteValue) * 0.05F)
-                                                .coerceAtMost(1.2F)
-                                                .coerceAtLeast(1F)
                                         scaleX = value
                                         scaleY = value
                                     }
+                                    .padding(horizontal = ((value-1F)*50.dp) + 8.dp)
                             )
                         }
                     }
