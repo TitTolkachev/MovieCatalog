@@ -16,11 +16,13 @@ private val MyColorScheme = lightColorScheme(
     onSecondary = White,
     tertiary = BaseWhite,
     onTertiary = GrayB3Color,
+    onSurface = ReviewGrayColor,
 
     primaryContainer = BottomNavGrayColor,
     background = BackgroundDarkColor,
     surface = StatusBarColor,
-    outline = BorderGrayColor
+    outline = BorderGrayColor,
+    outlineVariant = PlaceholderGrayColor
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

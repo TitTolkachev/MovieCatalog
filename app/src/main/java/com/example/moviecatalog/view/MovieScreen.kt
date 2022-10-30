@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +33,15 @@ import com.example.moviecatalog.ui.theme.montserratFamily
 import com.google.accompanist.flowlayout.FlowRow
 import java.time.ZonedDateTime
 
+@ExperimentalMaterial3Api
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
 fun MovieScreen(navController: NavController, movieId: Int) {
+
+    val openReviewDialog = remember { mutableStateOf(false) }
+    if(openReviewDialog.value)
+        ReviewDialog(openReviewDialog)
 
     val movieGenres = listOf(
         "драма",
@@ -168,6 +175,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                             contentDescription = "Add review icon",
                             modifier = Modifier
                                 .size(24.dp)
+                                .clickable { openReviewDialog.value = true }
                         )
                     }
                     MovieReviewsItems(movieReviews)
