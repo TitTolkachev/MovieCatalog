@@ -1,45 +1,41 @@
 package com.example.moviecatalog.view.screens
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.res.Resources
-import android.icu.util.Calendar
 import android.os.Build
 import android.util.Log
-import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.datastore.StoreAccessToken
-import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.AuthRepository
 import com.example.moviecatalog.network.RegisterRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
+import com.example.moviecatalog.view.sharedsamples.NewDatePicker
+import com.example.moviecatalog.view.sharedsamples.NewGenderCheckField
+import com.example.moviecatalog.view.sharedsamples.NewOutlinedButton
+import com.example.moviecatalog.view.sharedsamples.NewOutlinedTextField
+import com.example.moviecatalog.viewmodel.SignUpViewModel
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -48,12 +44,7 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalMaterial3Api
 @Composable
-fun SignUpScreen(navController: NavController) {
-
-    //ВНИМАНИЕ!!!
-    //Переменные ниже нужно будет вынести отдельно!!!
-
-    val repository = AuthRepository()
+fun SignUpScreen(signUpViewModel: SignUpViewModel) {
 
     val login = remember {
         mutableStateOf("")
@@ -143,12 +134,36 @@ fun SignUpScreen(navController: NavController) {
                         .verticalScroll(rememberScrollState())
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 32.dp)
                 ) {
-                    NewOutlinedTextField(login, LocalContext.current.getString(R.string.sign_up_login_text), false)
-                    NewOutlinedTextField(email, LocalContext.current.getString(R.string.sign_up_email_text), false)
-                    NewOutlinedTextField(name, LocalContext.current.getString(R.string.sign_up_name_text), false)
-                    NewOutlinedTextField(password, LocalContext.current.getString(R.string.sign_up_password_text), true)
-                    NewOutlinedTextField(passwordRepeat, LocalContext.current.getString(R.string.sign_up_password_confirm_text), true)
-                    NewDatePicker(localContext, datePicked, LocalContext.current.getString(R.string.sign_up_birth_date_text))
+                    NewOutlinedTextField(
+                        login,
+                        LocalContext.current.getString(R.string.sign_up_login_text),
+                        false
+                    )
+                    NewOutlinedTextField(
+                        email,
+                        LocalContext.current.getString(R.string.sign_up_email_text),
+                        false
+                    )
+                    NewOutlinedTextField(
+                        name,
+                        LocalContext.current.getString(R.string.sign_up_name_text),
+                        false
+                    )
+                    NewOutlinedTextField(
+                        password,
+                        LocalContext.current.getString(R.string.sign_up_password_text),
+                        true
+                    )
+                    NewOutlinedTextField(
+                        passwordRepeat,
+                        LocalContext.current.getString(R.string.sign_up_password_confirm_text),
+                        true
+                    )
+                    NewDatePicker(
+                        localContext,
+                        datePicked,
+                        LocalContext.current.getString(R.string.sign_up_birth_date_text)
+                    )
                     NewGenderCheckField(
                         isMaleChosen = isMaleChosen,
                         isFemaleChosen = isFemaleChosen
@@ -156,8 +171,6 @@ fun SignUpScreen(navController: NavController) {
                 }
             }
         }
-
-
 
         Box(
             modifier = Modifier
@@ -167,14 +180,14 @@ fun SignUpScreen(navController: NavController) {
         ) {
             BottomButtons(
                 isValidInput = isValidInput,
-                navController = navController,
                 scale.value == 0f,
-                repository,
-                localContext
+                signUpViewModel.repository,
+                localContext,
+                signUpViewModel::signUp,
+                signUpViewModel::navigateToSignInScreen
             )
         }
     }
-
 }
 
 
@@ -223,10 +236,11 @@ private fun calculateTopPadding(image: Painter): Dp {
 @Composable
 fun BottomButtons(
     isValidInput: Boolean,
-    navController: NavController,
     isClickable: Boolean,
     repository: AuthRepository,
-    ctx: Context
+    ctx: Context,
+    signUpFun: () -> Unit,
+    navigateToSignInScreenFun: () -> Unit
 ) {
 
     val scopeRemember = rememberCoroutineScope()
@@ -239,7 +253,7 @@ fun BottomButtons(
             LocalContext.current.getString(R.string.sign_up_sign_up_btn_text)
         ) {
             if (isClickable) {
-                scopeRemember.launch (Dispatchers.IO) {
+                scopeRemember.launch(Dispatchers.IO) {
                     repository.register(
                         RegisterRequestBody(
                             "TestString",
@@ -259,18 +273,14 @@ fun BottomButtons(
                             }
                         }
                     launch(Dispatchers.Main) {
-                        navController.navigate(Screen.Main.route) {
-                            popUpTo(Screen.SignIn.route) {
-                                inclusive = true
-                            }
-                        }
+                        signUpFun()
                     }
                 }
             }
         }
         Button(
             onClick = {
-                navController.popBackStack(Screen.SignIn.route, false)
+                navigateToSignInScreenFun()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -286,150 +296,6 @@ fun BottomButtons(
                 fontWeight = FontWeight.Medium,
                 fontStyle = FontStyle.Normal,
                 fontSize = 16.sp,
-            )
-        }
-    }
-}
-
-
-@ExperimentalMaterial3Api
-@RequiresApi(Build.VERSION_CODES.N)
-@Composable
-fun NewDatePicker(
-    context: Context,
-    date: MutableState<String>,
-    placeHolderText: String
-) {
-
-    val year: Int
-    val month: Int
-    val day: Int
-
-    val calendar = Calendar.getInstance()
-    year = calendar.get(Calendar.YEAR)
-    month = calendar.get(Calendar.MONTH)
-    day = calendar.get(Calendar.DAY_OF_MONTH)
-    calendar.time = Date()
-
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, Year: Int, Month: Int, DayOfMonth: Int ->
-            date.value = if (DayOfMonth < 10) "0$DayOfMonth." else "$DayOfMonth."
-            date.value += if (Month < 9) "0${Month + 1}." else "${Month + 1}."
-            date.value += Year.toString()
-        }, year, month, day
-    )
-
-    OutlinedButton(
-        onClick = {
-            datePickerDialog.show()
-        },
-        enabled = true,
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outline
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp)
-            .height(52.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onSecondary
-        ),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = if (date.value == "") placeHolderText else date.value,
-                fontFamily = ibmPlexSansFamily,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Normal,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(start = 16.dp),
-                textAlign = TextAlign.Start,
-                color = if (date.value == "") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.calendaricon),
-                contentDescription = LocalContext.current.getString(R.string.calendar_icon_content_description),
-                modifier = Modifier
-                    .scale(1.1f)
-                    .padding(end = 16.dp),
-                tint = MaterialTheme.colorScheme.outline
-            )
-        }
-    }
-}
-
-
-@Composable
-fun NewGenderCheckField(
-    isMaleChosen: MutableState<Boolean>,
-    isFemaleChosen: MutableState<Boolean>
-) {
-
-    Row(modifier = Modifier) {
-        OutlinedButton(
-            onClick = {
-                isMaleChosen.value = true
-                isFemaleChosen.value = false
-            },
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = if (isMaleChosen.value) MaterialTheme.colorScheme.primary else Color.Transparent
-            ),
-            modifier = Modifier
-                .height(44.dp)
-                .weight(1f)
-                .offset(x = 0.5.dp),
-            shape = RoundedCornerShape(
-                topStart = 8.dp,
-                topEnd = 0.dp,
-                bottomStart = 8.dp,
-                bottomEnd = 0.dp
-            )
-        ) {
-            Text(
-                text = LocalContext.current.getString(R.string.gender_picker_male_text),
-                fontFamily = ibmPlexSansFamily,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Normal,
-                fontSize = 14.sp,
-                color = if (isMaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
-            )
-        }
-
-        OutlinedButton(
-            onClick = {
-                isMaleChosen.value = false
-                isFemaleChosen.value = true
-            },
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = if (isFemaleChosen.value) MaterialTheme.colorScheme.primary else Color.Transparent
-            ),
-            modifier = Modifier
-                .height(44.dp)
-                .weight(1f)
-                .offset(x = ((-0.5).dp)),
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = 8.dp,
-                bottomStart = 0.dp,
-                bottomEnd = 8.dp
-            )
-        ) {
-            Text(
-                text = LocalContext.current.getString(R.string.gender_picker_female_text),
-                fontFamily = ibmPlexSansFamily,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Normal,
-                fontSize = 14.sp,
-                color = if (isFemaleChosen.value) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             )
         }
     }

@@ -11,6 +11,8 @@ import com.example.moviecatalog.navigation.AUTH_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.view.screens.SignInScreen
 import com.example.moviecatalog.view.screens.SignUpScreen
+import com.example.moviecatalog.viewmodel.SignInViewModel
+import com.example.moviecatalog.viewmodel.SignUpViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -26,12 +28,12 @@ fun NavGraphBuilder.authNavGraph(
         composable(
             route = Screen.SignIn.route,
         ){
-            SignInScreen(navController)
+            SignInScreen(SignInViewModel(navController))
         }
         composable(
             route = Screen.SignUp.route
         ){
-            SignUpScreen(navController)
+            SignUpScreen(SignUpViewModel(navController))
         }
     }
 }

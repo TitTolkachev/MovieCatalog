@@ -5,7 +5,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,54 +15,37 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 import androidx.compose.material3.*
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.times
+import com.example.moviecatalog.view.sharedsamples.NewBottomNavigationBar
+import com.example.moviecatalog.viewmodel.MainViewModel
 import kotlin.math.absoluteValue
 
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(mainViewModel: MainViewModel) {
 
     val favouriteMovies = remember {
-        mutableStateListOf(
-            R.drawable.featured,
-            R.drawable.featured,
-            R.drawable.featured,
-            R.drawable.featured,
-            R.drawable.featured,
-            R.drawable.featured
-        )
+        mainViewModel.favouriteMovies
     }
+
     val favouriteItems = remember {
         favouriteMovies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
     }
+
     val favouritesState = rememberLazyListState()
 
-    val galleryMovies = listOf(
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured,
-        R.drawable.featured
-    )
-
+    val galleryMovies = remember {
+        mutableStateOf(mainViewModel.galleryMovies)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -82,17 +64,18 @@ fun MainScreen(navController: NavController) {
             }
             item {
                 Column {
-                    Text(
-                        text = LocalContext.current.getString(R.string.favourites_block_text),
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 16.dp, top = 32.dp),
-                        fontFamily = ibmPlexSansFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    if (favouriteItems.size != 0)
+                        Text(
+                            text = LocalContext.current.getString(R.string.favourites_block_text),
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(start = 16.dp, top = 32.dp),
+                            fontFamily = ibmPlexSansFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Normal,
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
 
                     LazyRow(
                         modifier = Modifier
@@ -124,10 +107,10 @@ fun MainScreen(navController: NavController) {
                                         scaleY = value
                                     }
                                     .padding(horizontal = ((value - 1F) * 50.dp) + 8.dp),
-                                favouriteMovies,
+                                mainViewModel::removeMovieFromFavourites,
                                 favouriteItems,
                                 item,
-                                navController
+                                mainViewModel::navigateToMovie
                             )
                         }
                     }
@@ -146,29 +129,29 @@ fun MainScreen(navController: NavController) {
                 )
             }
 
-            items(galleryMovies) { item ->
-                GalleryItem(item, navController)
+            items(galleryMovies.value) { item ->
+                GalleryItem(item, mainViewModel::navigateToMovie)
             }
         }
 
         Box(
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-            NewBottomNavigationBar(navController = navController, true)
+            NewBottomNavigationBar(mainViewModel::navigateToProfileScreen, true)
         }
     }
 }
 
 
 @Composable
-private fun GalleryItem(item: Int, navController: NavController) {
+private fun GalleryItem(item: Int, navigateToMovieFun: (image: Int) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
             .clickable {
-                navController.navigate(Screen.MovieScreen.route + "/${item}")
+                navigateToMovieFun(item)
             }
     ) {
         Image(
@@ -239,88 +222,13 @@ private fun GalleryItem(item: Int, navController: NavController) {
 
 
 @Composable
-fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(68.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Button(
-            onClick = {
-                if (!isMainScreen) navController.popBackStack()
-            }, modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = if (isMainScreen) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.outline
-            )
-        ) {
-            Column(
-                modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = if (isMainScreen) painterResource(id = R.drawable.homeiconaccent)
-                    else painterResource(id = R.drawable.homeicon),
-                    contentDescription = LocalContext.current.getString(R.string.main_screen_item_content_description)
-                )
-                Text(
-                    text = LocalContext.current.getString(R.string.main_screen_btn_text),
-                    fontFamily = ibmPlexSansFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                    fontSize = 14.sp
-                )
-            }
-        }
-        Button(
-            onClick = {
-                if (isMainScreen) {
-                    navController.navigate(Screen.Profile.route)
-                }
-            },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(Color.Transparent),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = if (isMainScreen) MaterialTheme.colorScheme.outline
-                else MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Column(
-                modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = if (isMainScreen) painterResource(id = R.drawable.profileicon)
-                    else painterResource(id = R.drawable.profileiconaccent),
-                    contentDescription = LocalContext.current.getString(R.string.profile_screen_icon_content_description)
-                )
-                Text(
-                    text = LocalContext.current.getString(R.string.profile_screen_btn_text),
-                    fontFamily = ibmPlexSansFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                    fontSize = 14.sp
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
 fun NewMoviePreview(
     id: Int,
     modifier: Modifier = Modifier,
-    movies: MutableList<Int>,
+    removeMovieFun: (image: Int) -> Unit,
     items: SnapshotStateList<ImageItem>,
     item: ImageItem,
-    navController: NavController
+    navigateToMovieFun: (image: Int) -> Unit
 ) {
     Box(modifier = modifier) {
         Image(
@@ -332,7 +240,7 @@ fun NewMoviePreview(
                 .height(144.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .clickable {
-                    navController.navigate(Screen.MovieScreen.route + "/${item.imageId}")
+                    navigateToMovieFun(item.imageId)
                 }
         )
         Image(
@@ -342,7 +250,7 @@ fun NewMoviePreview(
                 .align(Alignment.TopEnd)
                 .padding(top = 4.dp, end = 4.dp)
                 .clickable {
-                    movies.remove(item.imageId)
+                    removeMovieFun(item.imageId)
                     items.remove(item)
                 }
         )

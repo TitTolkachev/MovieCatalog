@@ -27,10 +27,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.ui.theme.montserratFamily
+import com.example.moviecatalog.viewmodel.MovieViewModel
+import com.example.moviecatalog.viewmodel.ReviewViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import java.time.ZonedDateTime
 
@@ -38,36 +39,19 @@ import java.time.ZonedDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
-fun MovieScreen(navController: NavController, movieId: Int) {
+fun MovieScreen(movieViewModel: MovieViewModel, movieId: Int) {
 
     val openReviewDialog = remember { mutableStateOf(false) }
-    if(openReviewDialog.value)
-        ReviewDialog(openReviewDialog)
+    if (openReviewDialog.value)
+        ReviewDialog(openReviewDialog, ReviewViewModel(movieViewModel))
 
-    val movieGenres = listOf(
-        "драма",
-        "боевик",
-        "фантастик",
-        "мелодрама"
-    )
-    val movieReviews = listOf(
-        MovieReview(
-            R.drawable.featured,
-            "Spike",
-            false,
-            6,
-            "Im the best yeah",
-            ZonedDateTime.now()
-        ),
-        MovieReview(
-            R.drawable.profileusericon,
-            "Leon",
-            true,
-            9,
-            "Сразу скажу, что фильм мне понравился. Люблю Фримэна, уважаю Роббинса. Читаю Кинга. Но рецензия красненькая.",
-            ZonedDateTime.now()
-        )
-    )
+    val movieGenres = remember {
+        movieViewModel.movieGenres
+    }
+
+    val movieReviews = remember {
+        movieViewModel.movieReviews
+    }
 
     val state = rememberLazyListState()
 
@@ -88,7 +72,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                         contentScale = ContentScale.Crop
                     )
                     Text(
-                        text = "Побег из Шоушенка",
+                        text = movieViewModel.details.name,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
@@ -106,7 +90,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
-                    text = "Бухгалтер Энди Дюфрейн обвинён в убийстве собственной жены и её любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решётки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, обладающий живым умом и доброй душой, находит подход как к заключённым, так и к охранникам, добиваясь их особого к себе расположения",
+                    text = movieViewModel.details.description,
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal,
@@ -121,7 +105,8 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                 ) {
                     Column {
                         H3TextSample(
-                            text = LocalContext.current.getString(R.string.about_film_block_text), Modifier
+                            text = LocalContext.current.getString(R.string.about_film_block_text),
+                            Modifier
                                 .padding(bottom = 8.dp)
                         )
                         Row(
@@ -129,17 +114,38 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                                 .padding(bottom = 16.dp)
                         ) {
                             Column {
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_year), "1994")
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_country), "США")
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_time), "142 мин.")
                                 AboutMovieRowSample(
-                                    LocalContext.current.getString(R.string.movie_quote),
-                                    "«Страх - это кандалы. Надежда - это свобода»"
+                                    LocalContext.current.getString(R.string.movie_year),
+                                    movieViewModel.details.year.toString()
                                 )
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_producer), "Фрэнк Дарабонт")
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_budget), "\$25 000 000")
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_fees), "\$28 418 687")
-                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_age), "16+")
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_country),
+                                    movieViewModel.details.country
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_time),
+                                    movieViewModel.details.time.toString() + " мин."
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_tagline),
+                                    movieViewModel.details.tagline
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_director),
+                                    movieViewModel.details.director
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_budget),
+                                    "\$" + movieViewModel.details.budget.toString()
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_fees),
+                                    "\$" + movieViewModel.details.fees.toString()
+                                )
+                                AboutMovieRowSample(
+                                    LocalContext.current.getString(R.string.movie_age_limit),
+                                    "${movieViewModel.details.ageLimit}+"
+                                )
                             }
                         }
                     }
@@ -190,17 +196,17 @@ fun MovieScreen(navController: NavController, movieId: Int) {
             modifier = Modifier
                 .padding(start = 16.dp, top = 45.dp)
                 .size(24.dp)
-                .clickable { navController.popBackStack() }
+                .clickable { movieViewModel.navigateToMainScreen() }
         )
 
         if (isTopPanelVisible) {
-            TopMovieBar(navController)
+            TopMovieBar(movieViewModel::navigateToMainScreen, movieViewModel.details.name)
         }
     }
 }
 
 @Composable
-private fun TopMovieBar(navController: NavController) {
+private fun TopMovieBar(navigateToMainScreenFun: () -> Unit, movieName: String) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -216,10 +222,10 @@ private fun TopMovieBar(navController: NavController) {
             contentDescription = LocalContext.current.getString(R.string.arrow_back_icon_content_description),
             modifier = Modifier
                 .size(24.dp)
-                .clickable { navController.popBackStack() }
+                .clickable { navigateToMainScreenFun() }
         )
         Text(
-            text = "Побег из Шоушенка",
+            text = movieName,
             modifier = Modifier
                 .width(263.dp)
                 .offset(y = (-2).dp),
@@ -292,7 +298,10 @@ private fun MovieReviewsItem(review: MovieReview) {
                                 .width(214.dp)
                         ) {
                             H3TextSample(text = review.author, Modifier)
-                            SmallGrayTextSample(LocalContext.current.getString(R.string.movie_my_review_text), Modifier)
+                            SmallGrayTextSample(
+                                LocalContext.current.getString(R.string.movie_my_review_text),
+                                Modifier
+                            )
                         }
                     } else {
                         H3TextSample(text = review.author, Modifier)

@@ -19,50 +19,47 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
+import com.example.moviecatalog.view.sharedsamples.*
+import com.example.moviecatalog.viewmodel.ProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalMaterial3Api
 @Composable
-fun ProfileScreen(navController: NavHostController) {
-
-    //ВНИМАНИЕ!!!
-    //Переменные ниже нужно будет вынести отдельно!!!
+fun ProfileScreen(profileViewModel: ProfileViewModel) {
 
     val email = remember {
-        mutableStateOf("")
+        mutableStateOf(profileViewModel.details.email)
     }
 
-    val iconLink = remember {
-        mutableStateOf("")
+    val avatarLink = remember {
+        mutableStateOf(profileViewModel.details.avatarLink)
     }
 
     val name = remember {
-        mutableStateOf("")
+        mutableStateOf(profileViewModel.details.name)
     }
 
-    val datePicked = remember {
-        mutableStateOf("")
+    val birthDate = remember {
+        mutableStateOf(profileViewModel.details.birthDate)
     }
+
     val isMaleChosen = remember {
-        mutableStateOf(false)
+        mutableStateOf(profileViewModel.details.gender == 0)
     }
+
     val isFemaleChosen = remember {
-        mutableStateOf(false)
+        mutableStateOf(profileViewModel.details.gender == 1)
     }
 
     val localContext = LocalContext.current
 
     val isValidInput = (email.value != "") &&
             (name.value != "") &&
-            (iconLink.value != "") &&
-            (datePicked.value != "") &&
+            (avatarLink.value != "") &&
+            (birthDate.value != "") &&
             (isMaleChosen.value || isFemaleChosen.value)
-
-
 
     Box(
         modifier = Modifier
@@ -98,11 +95,11 @@ fun ProfileScreen(navController: NavHostController) {
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_email))
             NewOutlinedTextField(email, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_avatar_link))
-            NewOutlinedTextField(iconLink, "", false)
+            NewOutlinedTextField(avatarLink, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_name))
             NewOutlinedTextField(name, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_birth_date))
-            NewDatePicker(localContext, datePicked, "")
+            NewDatePicker(localContext, birthDate, "")
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_gender))
             NewGenderCheckField(
                 isMaleChosen = isMaleChosen,
@@ -114,15 +111,15 @@ fun ProfileScreen(navController: NavHostController) {
                     .padding(bottom = 32.dp)
             )
 
-            NewOutlinedButton(isValidInput = isValidInput, buttonText = LocalContext.current.getString(R.string.profile_save_btn_text)) {
-                navController.popBackStack()
-                navController.navigate(Screen.Profile.route)
+            NewOutlinedButton(
+                isValidInput = isValidInput,
+                buttonText = LocalContext.current.getString(R.string.profile_save_btn_text)
+            ) {
+                profileViewModel.saveProfileChanges()
             }
             Button(
                 onClick = {
-                    navController.popBackStack()
-                    navController.popBackStack()
-                    navController.navigate(Screen.SignIn.route)
+                    profileViewModel.navigateToSignInScreen()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,7 +144,7 @@ fun ProfileScreen(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            NewBottomNavigationBar(navController = navController, false)
+            NewBottomNavigationBar(profileViewModel::navigateToMainScreen, false)
         }
     }
 }
@@ -167,3 +164,5 @@ private fun AboveInputFieldText(text: String) {
         color = MaterialTheme.colorScheme.outline
     )
 }
+
+

@@ -24,11 +24,11 @@
     <string name="movie_year">Год</string>
     <string name="movie_country">Страна</string>
     <string name="movie_time">Время</string>
-    <string name="movie_quote">Слоган</string>
-    <string name="movie_producer">Режиссёр</string>
+    <string name="movie_tagline">Слоган</string>
+    <string name="movie_director">Режиссёр</string>
     <string name="movie_budget">Бюджет</string>
     <string name="movie_fees">Сборы в мире</string>
-    <string name="movie_age">Возраст</string>
+    <string name="movie_age_limit">Возраст</string>
     <string name="movie_my_review_text">мой отзыв</string>
 
     <string name="profile_email">E-mail</string>

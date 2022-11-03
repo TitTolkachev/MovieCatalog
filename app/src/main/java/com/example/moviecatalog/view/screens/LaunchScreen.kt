@@ -14,13 +14,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.navigation.Screen
+import com.example.moviecatalog.viewmodel.LaunchViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun LaunchScreen(navController: NavController) {
+fun LaunchScreen(launchViewModel: LaunchViewModel) {
     val scale = remember {
         Animatable(0f)
     }
@@ -35,11 +34,7 @@ fun LaunchScreen(navController: NavController) {
             )
         )
         delay(500L)
-        navController.popBackStack()
-        navController.navigate(Screen.SignIn.route)
-        //navController.navigate(Screen.SignUp.route)
-        //navController.navigate(Screen.Main.route)
-        //navController.navigate(Screen.MovieScreen.route+"/${R.drawable.featured}")
+        launchViewModel.navigateToMainScreen()
     }
     Box(
         modifier = Modifier

@@ -2,11 +2,8 @@ package com.example.moviecatalog.view.screens
 
 import android.content.res.Resources
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,27 +13,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
+import com.example.moviecatalog.view.sharedsamples.NewOutlinedButton
+import com.example.moviecatalog.view.sharedsamples.NewOutlinedTextField
+import com.example.moviecatalog.viewmodel.SignInViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun SignInScreen(navController: NavController) {
+fun SignInScreen(signInViewModel: SignInViewModel) {
 
-    //ВНИМАНИЕ!!!
-    //Переменные ниже нужно будет вынести отдельно!!!
     val login = remember {
         mutableStateOf("")
     }
@@ -54,7 +46,6 @@ fun SignInScreen(navController: NavController) {
         Animatable(0f)
     }
     EntryAnimations(scale, alpha)
-
 
     Image(
         painter = image,
@@ -91,16 +82,12 @@ fun SignInScreen(navController: NavController) {
                 isValidInput,
                 LocalContext.current.getString(R.string.sign_in_sign_in_btn_text)
             ) {
-                navController.navigate(Screen.Main.route) {
-                    popUpTo(Screen.SignIn.route) {
-                        inclusive = true
-                    }
-                }
+                signInViewModel.navigateToMainScreen()
             }
             Button(
                 onClick = {
                     if (scale.value > 0.7f)
-                        navController.navigate(Screen.SignUp.route)
+                        signInViewModel.navigateToSignUpScreen()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,93 +147,6 @@ private fun EntryAnimations(
                 durationMillis = 800,
                 easing = FastOutLinearInEasing
             )
-        )
-    }
-}
-
-
-@ExperimentalMaterial3Api
-@Composable
-fun NewOutlinedTextField(
-    message: MutableState<String>,
-    placeholderText: String,
-    isPassword: Boolean
-) {
-    OutlinedTextField(
-        value = message.value,
-        onValueChange = { newText ->
-            message.value = newText
-        },
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .fillMaxWidth(),
-        placeholder = {
-            Text(
-                text = placeholderText,
-                fontFamily = ibmPlexSansFamily,
-                fontSize = 14.sp
-            )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            placeholderColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            containerColor = Color.Transparent
-        ),
-        shape = RoundedCornerShape(8.dp),
-        textStyle = TextStyle(
-            fontFamily = ibmPlexSansFamily,
-            fontSize = 14.sp
-        ),
-        singleLine = true,
-        visualTransformation =
-        if (isPassword)
-            PasswordVisualTransformation()
-        else
-            VisualTransformation.None,
-        keyboardOptions =
-        if (isPassword)
-            KeyboardOptions(keyboardType = KeyboardType.Password)
-        else
-            KeyboardOptions.Default
-    )
-}
-
-
-@Composable
-fun NewOutlinedButton(isValidInput: Boolean, buttonText: String, onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        enabled = isValidInput,
-        border = BorderStroke(
-            if (!isValidInput)
-                1.dp
-            else
-                0.dp,
-            if (!isValidInput)
-                MaterialTheme.colorScheme.outline
-            else
-                MaterialTheme.colorScheme.primary
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .height(44.dp),
-        shape = RoundedCornerShape(4.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            disabledContainerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onSecondary,
-            disabledContentColor = MaterialTheme.colorScheme.primary,
-        )
-    ) {
-        Text(
-            text = buttonText,
-            fontFamily = ibmPlexSansFamily,
-            fontWeight = FontWeight.Medium,
-            fontStyle = FontStyle.Normal,
-            fontSize = 16.sp,
         )
     }
 }

@@ -26,19 +26,20 @@ import androidx.compose.ui.window.Dialog
 import com.example.moviecatalog.R
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.ui.theme.montserratFamily
+import com.example.moviecatalog.viewmodel.ReviewViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
+fun ReviewDialog(openReviewDialog: MutableState<Boolean>, reviewViewModel: ReviewViewModel) {
 
     val reviewText = remember {
-        mutableStateOf("")
+        mutableStateOf(reviewViewModel.reviewText)
     }
-    val isAnonymousReview = remember {
-        mutableStateOf(false)
+    val isAnonymous = remember {
+        mutableStateOf(reviewViewModel.isAnonymous)
     }
-    val stars = remember {
-        mutableStateOf(0)
+    val rating = remember {
+        mutableStateOf(reviewViewModel.rating)
     }
 
     Dialog(
@@ -79,9 +80,9 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                             Image(
                                 modifier = Modifier
                                     .size(24.dp)
-                                    .clickable { stars.value = it + 1 },
+                                    .clickable { rating.value = it + 1 },
                                 painter = painterResource(
-                                    id = if (it < stars.value)
+                                    id = if (it < rating.value)
                                         R.drawable.filled_star
                                     else
                                         R.drawable.unfilled_star
@@ -143,8 +144,8 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                         Checkbox(
                             modifier = Modifier
                                 .size(24.dp),
-                            checked = isAnonymousReview.value,
-                            onCheckedChange = { isAnonymousReview.value = it },
+                            checked = isAnonymous.value,
+                            onCheckedChange = { isAnonymous.value = it },
                             colors = CheckboxDefaults.colors(
                                 uncheckedColor = Color.Transparent,
                                 checkedColor = Color.Transparent,

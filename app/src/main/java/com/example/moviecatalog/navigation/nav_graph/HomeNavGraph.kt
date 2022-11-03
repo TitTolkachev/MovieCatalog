@@ -12,6 +12,9 @@ import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.view.screens.MainScreen
 import com.example.moviecatalog.view.screens.MovieScreen
 import com.example.moviecatalog.view.screens.ProfileScreen
+import com.example.moviecatalog.viewmodel.MainViewModel
+import com.example.moviecatalog.viewmodel.MovieViewModel
+import com.example.moviecatalog.viewmodel.ProfileViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @SuppressLint("NewApi")
@@ -29,12 +32,12 @@ fun NavGraphBuilder.homeNavGraph(
         composable(
             route = Screen.Main.route,
         ) {
-            MainScreen(navController)
+            MainScreen(MainViewModel(navController))
         }
         composable(
             route = Screen.Profile.route,
         ) {
-            ProfileScreen(navController)
+            ProfileScreen(ProfileViewModel(navController))
         }
         composable(
             route = Screen.MovieScreen.route+"/{movieId}",
@@ -43,7 +46,7 @@ fun NavGraphBuilder.homeNavGraph(
             })
         ) {
             val movieId = it.arguments?.getInt("movieId")!!
-            MovieScreen(navController, movieId)
+            MovieScreen(MovieViewModel(navController), movieId)
         }
     }
 }
