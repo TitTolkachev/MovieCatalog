@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.*
@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.times
 import kotlin.math.absoluteValue
 
@@ -49,7 +50,6 @@ fun MainScreen(navController: NavController) {
         favouriteMovies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
     }
     val favouritesState = rememberLazyListState()
-
 
     val galleryMovies = listOf(
         R.drawable.featured,
@@ -76,15 +76,14 @@ fun MainScreen(navController: NavController) {
             item {
                 Image(
                     painter = painterResource(id = R.drawable.featured),
-                    contentDescription = "Poster",
+                    contentDescription = LocalContext.current.getString(R.string.poster_content_description),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
             item {
                 Column {
-
                     Text(
-                        text = "Избранное",
+                        text = LocalContext.current.getString(R.string.favourites_block_text),
                         modifier = Modifier
                             .align(Alignment.Start)
                             .padding(start = 16.dp, top = 32.dp),
@@ -137,7 +136,7 @@ fun MainScreen(navController: NavController) {
 
             item {
                 Text(
-                    text = "Галерея",
+                    text = LocalContext.current.getString(R.string.gallery_block_text),
                     modifier = Modifier.padding(start = 16.dp, top = 32.dp, bottom = 8.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Bold,
@@ -147,7 +146,7 @@ fun MainScreen(navController: NavController) {
                 )
             }
 
-            items(galleryMovies) {item->
+            items(galleryMovies) { item ->
                 GalleryItem(item, navController)
             }
         }
@@ -158,7 +157,6 @@ fun MainScreen(navController: NavController) {
             NewBottomNavigationBar(navController = navController, true)
         }
     }
-
 }
 
 
@@ -175,7 +173,7 @@ private fun GalleryItem(item: Int, navController: NavController) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.featured),
-            contentDescription = "Gallery Item",
+            contentDescription = LocalContext.current.getString(R.string.gallery_item_content_description),
             modifier = Modifier
                 .width(100.dp)
                 .height(144.dp),
@@ -267,10 +265,10 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
                 Image(
                     painter = if (isMainScreen) painterResource(id = R.drawable.homeiconaccent)
                     else painterResource(id = R.drawable.homeicon),
-                    contentDescription = "Main Screen Icon"
+                    contentDescription = LocalContext.current.getString(R.string.main_screen_item_content_description)
                 )
                 Text(
-                    text = "Главная",
+                    text = LocalContext.current.getString(R.string.main_screen_btn_text),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Medium,
                     fontStyle = FontStyle.Normal,
@@ -300,10 +298,10 @@ fun NewBottomNavigationBar(navController: NavController, isMainScreen: Boolean) 
                 Image(
                     painter = if (isMainScreen) painterResource(id = R.drawable.profileicon)
                     else painterResource(id = R.drawable.profileiconaccent),
-                    contentDescription = "Profile Screen Icon"
+                    contentDescription = LocalContext.current.getString(R.string.profile_screen_icon_content_description)
                 )
                 Text(
-                    text = "Профиль",
+                    text = LocalContext.current.getString(R.string.profile_screen_btn_text),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Medium,
                     fontStyle = FontStyle.Normal,
@@ -327,7 +325,7 @@ fun NewMoviePreview(
     Box(modifier = modifier) {
         Image(
             painter = painterResource(id = id),
-            contentDescription = "Movie $id",
+            contentDescription = LocalContext.current.getString(R.string.movie_preview_content_description) + id.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(100.dp)
@@ -339,7 +337,7 @@ fun NewMoviePreview(
         )
         Image(
             painter = painterResource(id = R.drawable.deletefromfavourites),
-            contentDescription = "Delete from favourites icon",
+            contentDescription = LocalContext.current.getString(R.string.delete_from_favourites_icon_content_description),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 4.dp, end = 4.dp)

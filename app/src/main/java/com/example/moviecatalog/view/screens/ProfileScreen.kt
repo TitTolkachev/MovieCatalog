@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -81,7 +81,7 @@ fun ProfileScreen(navController: NavHostController) {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.profileusericon),
-                    contentDescription = "Profile User Icon"
+                    contentDescription = null
                 )
                 Text(
                     text = "Leon",
@@ -95,15 +95,15 @@ fun ProfileScreen(navController: NavHostController) {
                 )
             }
 
-            AboveInputFieldText(text = "E-mail")
+            AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_email))
             NewOutlinedTextField(email, "", false)
-            AboveInputFieldText(text = "Ссылка на аватарку")
+            AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_avatar_link))
             NewOutlinedTextField(iconLink, "", false)
-            AboveInputFieldText(text = "Имя")
+            AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_name))
             NewOutlinedTextField(name, "", false)
-            AboveInputFieldText(text = "Дата рождения")
+            AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_birth_date))
             NewDatePicker(localContext, datePicked, "")
-            AboveInputFieldText(text = "Пол")
+            AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_gender))
             NewGenderCheckField(
                 isMaleChosen = isMaleChosen,
                 isFemaleChosen = isFemaleChosen
@@ -114,7 +114,7 @@ fun ProfileScreen(navController: NavHostController) {
                     .padding(bottom = 32.dp)
             )
 
-            NewOutlinedButton(isValidInput = isValidInput, buttonText = "Сохранить") {
+            NewOutlinedButton(isValidInput = isValidInput, buttonText = LocalContext.current.getString(R.string.profile_save_btn_text)) {
                 navController.popBackStack()
                 navController.navigate(Screen.Profile.route)
             }
@@ -133,7 +133,7 @@ fun ProfileScreen(navController: NavHostController) {
                 )
             ) {
                 Text(
-                    text = "Выйти из аккаунта",
+                    text = LocalContext.current.getString(R.string.profile_sign_out_btn_text),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Medium,
                     fontStyle = FontStyle.Normal,

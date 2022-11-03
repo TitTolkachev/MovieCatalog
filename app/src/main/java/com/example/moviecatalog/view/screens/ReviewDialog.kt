@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -41,8 +42,6 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
     }
 
     Dialog(
-        //shape = RoundedCornerShape(16.dp),
-        //containerColor = MaterialTheme.colorScheme.onSurface,
         onDismissRequest = { openReviewDialog.value = false },
     ) {
         Surface(
@@ -55,7 +54,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
             ) {
                 Text(
-                    text = "Оставить отзыв",
+                    text = LocalContext.current.getString(R.string.review_dialog_add_review_text),
                     modifier = Modifier
                         .padding(bottom = 16.dp)
                         .fillMaxWidth(),
@@ -87,7 +86,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                                     else
                                         R.drawable.unfilled_star
                                 ),
-                                contentDescription = "filled star"
+                                contentDescription = null
                             )
                         }
                     }
@@ -96,7 +95,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                 TextField(
                     value = reviewText.value,
                     placeholder = {
-                        Text("Отзыв")
+                        Text(LocalContext.current.getString(R.string.review_dialog_review_text))
                     },
                     modifier = Modifier
                         .padding(vertical = 16.dp)
@@ -127,7 +126,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                         .padding(bottom = 16.dp)
                 ) {
                     Text(
-                        text = "Анонимный отзыв",
+                        text = LocalContext.current.getString(R.string.review_dialog_anonymous_check_text),
                         fontFamily = ibmPlexSansFamily,
                         fontWeight = FontWeight.Medium,
                         fontStyle = FontStyle.Normal,
@@ -162,7 +161,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                         .height(44.dp),
                     onClick = { openReviewDialog.value = false }) {
                     Text(
-                        text = "Сохранить",
+                        text = LocalContext.current.getString(R.string.review_dialog_save_btn_text),
                         fontFamily = ibmPlexSansFamily,
                         fontWeight = FontWeight.Medium,
                         fontStyle = FontStyle.Normal,
@@ -181,7 +180,7 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>) {
                     )
                 ) {
                     Text(
-                        text = "Отмена",
+                        text = LocalContext.current.getString(R.string.review_dialog_cancel_btn_text),
                         fontFamily = ibmPlexSansFamily,
                         fontWeight = FontWeight.Medium,
                         fontStyle = FontStyle.Normal,

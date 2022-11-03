@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.content.res.Resources
 import androidx.compose.animation.core.*
@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -57,7 +58,7 @@ fun SignInScreen(navController: NavController) {
 
     Image(
         painter = image,
-        contentDescription = "Logo",
+        contentDescription = LocalContext.current.getString(R.string.logo_content_description),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 106.dp - scale.value * 51.dp)
@@ -77,8 +78,8 @@ fun SignInScreen(navController: NavController) {
             modifier = Modifier
                 .alpha(alpha.value)
         ) {
-            NewOutlinedTextField(login, "Логин", false)
-            NewOutlinedTextField(password, "Пароль", true)
+            NewOutlinedTextField(login, LocalContext.current.getString(R.string.sign_in_login_text), false)
+            NewOutlinedTextField(password, LocalContext.current.getString(R.string.sign_in_password_text), true)
         }
 
         Column(
@@ -88,7 +89,7 @@ fun SignInScreen(navController: NavController) {
         ) {
             NewOutlinedButton(
                 isValidInput,
-                "Войти"
+                LocalContext.current.getString(R.string.sign_in_sign_in_btn_text)
             ) {
                 navController.navigate(Screen.Main.route) {
                     popUpTo(Screen.SignIn.route) {
@@ -110,7 +111,7 @@ fun SignInScreen(navController: NavController) {
                 )
             ) {
                 Text(
-                    text = "Регистрация",
+                    text = LocalContext.current.getString(R.string.sign_in_sign_up_btn_text),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Medium,
                     fontStyle = FontStyle.Normal,

@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.moviecatalog.navigation.AUTH_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
-import com.example.moviecatalog.view.SignInScreen
-import com.example.moviecatalog.view.SignUpScreen
+import com.example.moviecatalog.view.screens.SignInScreen
+import com.example.moviecatalog.view.screens.SignUpScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.icu.util.Calendar
 import android.os.Build
+import android.util.Log
 import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
@@ -34,9 +35,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
+import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
+import com.example.moviecatalog.network.AuthRepository
+import com.example.moviecatalog.network.RegisterRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.*
 import java.util.*
 
 @DelicateCoroutinesApi
@@ -48,6 +52,9 @@ fun SignUpScreen(navController: NavController) {
 
     //ВНИМАНИЕ!!!
     //Переменные ниже нужно будет вынести отдельно!!!
+
+    val repository = AuthRepository()
+
     val login = remember {
         mutableStateOf("")
     }
@@ -98,7 +105,7 @@ fun SignUpScreen(navController: NavController) {
     Box {
         Image(
             painter = image,
-            contentDescription = "Logo",
+            contentDescription = LocalContext.current.getString(R.string.logo_content_description),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 106.dp - scale.value * 51.dp)
@@ -119,7 +126,7 @@ fun SignUpScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Регистрация",
+                    text = LocalContext.current.getString(R.string.sign_up_sign_up_block_text),
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(start = 16.dp),
@@ -136,12 +143,12 @@ fun SignUpScreen(navController: NavController) {
                         .verticalScroll(rememberScrollState())
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 32.dp)
                 ) {
-                    NewOutlinedTextField(login, "Логин", false)
-                    NewOutlinedTextField(email, "E-mail", false)
-                    NewOutlinedTextField(name, "Имя", false)
-                    NewOutlinedTextField(password, "Пароль", true)
-                    NewOutlinedTextField(passwordRepeat, "Подтвердите пароль", true)
-                    NewDatePicker(localContext, datePicked, "Дата рождения")
+                    NewOutlinedTextField(login, LocalContext.current.getString(R.string.sign_up_login_text), false)
+                    NewOutlinedTextField(email, LocalContext.current.getString(R.string.sign_up_email_text), false)
+                    NewOutlinedTextField(name, LocalContext.current.getString(R.string.sign_up_name_text), false)
+                    NewOutlinedTextField(password, LocalContext.current.getString(R.string.sign_up_password_text), true)
+                    NewOutlinedTextField(passwordRepeat, LocalContext.current.getString(R.string.sign_up_password_confirm_text), true)
+                    NewDatePicker(localContext, datePicked, LocalContext.current.getString(R.string.sign_up_birth_date_text))
                     NewGenderCheckField(
                         isMaleChosen = isMaleChosen,
                         isFemaleChosen = isFemaleChosen
@@ -161,7 +168,9 @@ fun SignUpScreen(navController: NavController) {
             BottomButtons(
                 isValidInput = isValidInput,
                 navController = navController,
-                scale.value == 0f
+                scale.value == 0f,
+                repository,
+                localContext
             )
         }
     }
@@ -212,25 +221,56 @@ private fun calculateTopPadding(image: Painter): Dp {
 
 
 @Composable
-fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickable: Boolean) {
+fun BottomButtons(
+    isValidInput: Boolean,
+    navController: NavController,
+    isClickable: Boolean,
+    repository: AuthRepository,
+    ctx: Context
+) {
+
+    val scopeRemember = rememberCoroutineScope()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NewOutlinedButton(
             isValidInput,
-            "Зарегистрироваться"
+            LocalContext.current.getString(R.string.sign_up_sign_up_btn_text)
         ) {
-            navController.navigate(Screen.Main.route) {
-                popUpTo(Screen.SignIn.route) {
-                    inclusive = true
+            if (isClickable) {
+                scopeRemember.launch (Dispatchers.IO) {
+                    repository.register(
+                        RegisterRequestBody(
+                            "TestString",
+                            "string",
+                            "12345678",
+                            "test@test.com",
+                            "2022-10-31T13:09:18.709Z",
+                            0
+                        )
+                    )
+                        .collect { result ->
+                            result.onSuccess {
+                                Log.e("123456", it.token)
+                                StoreAccessToken(ctx).saveAccessToken(it.token)
+                            }.onFailure {
+                                Log.e("123456", "Not collected")
+                            }
+                        }
+                    launch(Dispatchers.Main) {
+                        navController.navigate(Screen.Main.route) {
+                            popUpTo(Screen.SignIn.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 }
             }
         }
-
         Button(
             onClick = {
-                if (isClickable)
-                    navController.popBackStack(Screen.SignIn.route, false)
+                navController.popBackStack(Screen.SignIn.route, false)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -241,7 +281,7 @@ fun BottomButtons(isValidInput: Boolean, navController: NavController, isClickab
             )
         ) {
             Text(
-                text = "У меня уже есть аккаунт",
+                text = LocalContext.current.getString(R.string.sign_up_sign_in_btn_text),
                 fontFamily = ibmPlexSansFamily,
                 fontWeight = FontWeight.Medium,
                 fontStyle = FontStyle.Normal,
@@ -317,7 +357,7 @@ fun NewDatePicker(
             )
             Icon(
                 painter = painterResource(id = R.drawable.calendaricon),
-                contentDescription = "Calendar Icon",
+                contentDescription = LocalContext.current.getString(R.string.calendar_icon_content_description),
                 modifier = Modifier
                     .scale(1.1f)
                     .padding(end = 16.dp),
@@ -355,7 +395,7 @@ fun NewGenderCheckField(
             )
         ) {
             Text(
-                text = "Мужчина",
+                text = LocalContext.current.getString(R.string.gender_picker_male_text),
                 fontFamily = ibmPlexSansFamily,
                 fontWeight = FontWeight.Normal,
                 fontStyle = FontStyle.Normal,
@@ -384,7 +424,7 @@ fun NewGenderCheckField(
             )
         ) {
             Text(
-                text = "Женщина",
+                text = LocalContext.current.getString(R.string.gender_picker_female_text),
                 fontFamily = ibmPlexSansFamily,
                 fontWeight = FontWeight.Normal,
                 fontStyle = FontStyle.Normal,

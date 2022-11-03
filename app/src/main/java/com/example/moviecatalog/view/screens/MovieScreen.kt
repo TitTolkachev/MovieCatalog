@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -81,7 +82,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                 Box {
                     Image(
                         painter = painterResource(id = movieId),
-                        contentDescription = "Movie poster",
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(),
                         contentScale = ContentScale.Crop
@@ -120,7 +121,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                 ) {
                     Column {
                         H3TextSample(
-                            text = "О фильме", Modifier
+                            text = LocalContext.current.getString(R.string.about_film_block_text), Modifier
                                 .padding(bottom = 8.dp)
                         )
                         Row(
@@ -128,17 +129,17 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                                 .padding(bottom = 16.dp)
                         ) {
                             Column {
-                                AboutMovieRowSample("Год", "1994")
-                                AboutMovieRowSample("Страна", "США")
-                                AboutMovieRowSample("Время", "142 мин.")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_year), "1994")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_country), "США")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_time), "142 мин.")
                                 AboutMovieRowSample(
-                                    "Слоган",
+                                    LocalContext.current.getString(R.string.movie_quote),
                                     "«Страх - это кандалы. Надежда - это свобода»"
                                 )
-                                AboutMovieRowSample("Режиссёр", "Фрэнк Дарабонт")
-                                AboutMovieRowSample("Бюджет", "\$25 000 000")
-                                AboutMovieRowSample("Сборы в мире", "\$28 418 687")
-                                AboutMovieRowSample("Возраст", "16+")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_producer), "Фрэнк Дарабонт")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_budget), "\$25 000 000")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_fees), "\$28 418 687")
+                                AboutMovieRowSample(LocalContext.current.getString(R.string.movie_age), "16+")
                             }
                         }
                     }
@@ -150,7 +151,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                         .padding(horizontal = 16.dp)
                 ) {
                     H3TextSample(
-                        "Жанры", Modifier
+                        LocalContext.current.getString(R.string.genres_block_text), Modifier
                             .padding(bottom = 8.dp)
                     )
                     MovieGenresItems(movieGenres)
@@ -167,12 +168,12 @@ fun MovieScreen(navController: NavController, movieId: Int) {
                             .fillMaxWidth()
                     ) {
                         H3TextSample(
-                            "Отзывы", Modifier
+                            LocalContext.current.getString(R.string.reviews_block_text), Modifier
                                 .padding(bottom = 8.dp)
                         )
                         Image(
                             painter = painterResource(id = R.drawable.plus_icon),
-                            contentDescription = "Add review icon",
+                            contentDescription = LocalContext.current.getString(R.string.add_review_icon_content_description),
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable { openReviewDialog.value = true }
@@ -185,7 +186,7 @@ fun MovieScreen(navController: NavController, movieId: Int) {
 
         Image(
             painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = "Arrow back",
+            contentDescription = LocalContext.current.getString(R.string.arrow_back_icon_content_description),
             modifier = Modifier
                 .padding(start = 16.dp, top = 45.dp)
                 .size(24.dp)
@@ -212,7 +213,7 @@ private fun TopMovieBar(navController: NavController) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = "Arrow back",
+            contentDescription = LocalContext.current.getString(R.string.arrow_back_icon_content_description),
             modifier = Modifier
                 .size(24.dp)
                 .clickable { navController.popBackStack() }
@@ -231,7 +232,7 @@ private fun TopMovieBar(navController: NavController) {
         )
         Image(
             painter = painterResource(id = R.drawable.unfilled_heart),
-            contentDescription = "Heart",
+            contentDescription = LocalContext.current.getString(R.string.heart_icon_content_description),
             modifier = Modifier
                 .size(24.dp)
         )
@@ -278,7 +279,7 @@ private fun MovieReviewsItem(review: MovieReview) {
                     Image(
                         contentScale = ContentScale.Crop,
                         painter = painterResource(id = review.image),
-                        contentDescription = "Reviewers Icon",
+                        contentDescription = null,
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .clip(CircleShape)
@@ -291,7 +292,7 @@ private fun MovieReviewsItem(review: MovieReview) {
                                 .width(214.dp)
                         ) {
                             H3TextSample(text = review.author, Modifier)
-                            SmallGrayTextSample("мой отзыв", Modifier)
+                            SmallGrayTextSample(LocalContext.current.getString(R.string.movie_my_review_text), Modifier)
                         }
                     } else {
                         H3TextSample(text = review.author, Modifier)
@@ -334,14 +335,14 @@ private fun MovieReviewsItem(review: MovieReview) {
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.pencil),
-                            contentDescription = "Pencil",
+                            contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .size(24.dp)
                         )
                         Image(
                             painter = painterResource(id = R.drawable.redx),
-                            contentDescription = "Red delete button",
+                            contentDescription = null,
                             modifier = Modifier
                                 .size(24.dp)
                         )

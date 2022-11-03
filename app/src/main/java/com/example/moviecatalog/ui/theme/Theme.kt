@@ -17,21 +17,11 @@ private val MyColorScheme = lightColorScheme(
     tertiary = BaseWhite,
     onTertiary = GrayB3Color,
     onSurface = ReviewGrayColor,
-
     primaryContainer = BottomNavGrayColor,
     background = BackgroundDarkColor,
     surface = StatusBarColor,
     outline = BorderGrayColor,
     outlineVariant = PlaceholderGrayColor
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 @Composable
@@ -43,10 +33,6 @@ fun MovieCatalogTheme(
     val backgroundArgb = MaterialTheme.colorScheme.surface.toArgb()
     activity.window.statusBarColor = backgroundArgb
     activity.window.navigationBarColor = backgroundArgb
-
-    //activity.window.decorView.apply {
-    //    systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    //}
 
     val windowInsetsController =
         ViewCompat.getWindowInsetsController(activity.window.decorView) ?: return

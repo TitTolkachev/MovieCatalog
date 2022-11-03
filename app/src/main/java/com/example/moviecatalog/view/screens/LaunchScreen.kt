@@ -1,4 +1,4 @@
-package com.example.moviecatalog.view
+package com.example.moviecatalog.view.screens
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -35,10 +36,10 @@ fun LaunchScreen(navController: NavController) {
         )
         delay(500L)
         navController.popBackStack()
-        //navController.navigate(Screen.SignIn.route)
+        navController.navigate(Screen.SignIn.route)
         //navController.navigate(Screen.SignUp.route)
         //navController.navigate(Screen.Main.route)
-        navController.navigate(Screen.MovieScreen.route+"/${R.drawable.featured}")
+        //navController.navigate(Screen.MovieScreen.route+"/${R.drawable.featured}")
     }
     Box(
         modifier = Modifier
@@ -47,7 +48,7 @@ fun LaunchScreen(navController: NavController) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.group_57),
-            contentDescription = "Logo",
+            contentDescription = LocalContext.current.getString(R.string.logo_content_description),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 75.dp)

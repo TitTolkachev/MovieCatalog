@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.moviecatalog.navigation.ROOT_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
-import com.example.moviecatalog.view.LaunchScreen
+import com.example.moviecatalog.view.screens.LaunchScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

@@ -1,5 +1,6 @@
 package com.example.moviecatalog.navigation.nav_graph
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -8,11 +9,12 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.example.moviecatalog.navigation.HOME_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
-import com.example.moviecatalog.view.MainScreen
-import com.example.moviecatalog.view.MovieScreen
-import com.example.moviecatalog.view.ProfileScreen
+import com.example.moviecatalog.view.screens.MainScreen
+import com.example.moviecatalog.view.screens.MovieScreen
+import com.example.moviecatalog.view.screens.ProfileScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+@SuppressLint("NewApi")
 @ExperimentalFoundationApi
 @DelicateCoroutinesApi
 @RequiresApi(Build.VERSION_CODES.N)

@@ -1,3 +1,65 @@
 <resources>
     <string name="app_name">MovieCatalog</string>
+
+    <string name="logo_content_description">Logo</string>
+    <string name="poster_content_description">Poster</string>
+    <string name="gallery_item_content_description">Gallery Item</string>
+    <string name="main_screen_item_content_description">Main Screen Icon</string>
+    <string name="profile_screen_icon_content_description">Profile Screen Icon</string>
+    <string name="movie_preview_content_description">Movie</string>
+    <string name="delete_from_favourites_icon_content_description">Delete from favourites icon</string>
+    <string name="add_review_icon_content_description">Add review icon</string>
+    <string name="arrow_back_icon_content_description">Arrow back</string>
+    <string name="heart_icon_content_description">Heart</string>
+    <string name="calendar_icon_content_description">Calendar Icon</string>
+
+    <string name="favourites_block_text">Избранное</string>
+    <string name="gallery_block_text">Галерея</string>
+    <string name="about_film_block_text">О фильме</string>
+    <string name="genres_block_text">Жанры</string>
+    <string name="reviews_block_text">Отзывы</string>
+    <string name="main_screen_btn_text">Главная</string>
+    <string name="profile_screen_btn_text">Профиль</string>
+
+    <string name="movie_year">Год</string>
+    <string name="movie_country">Страна</string>
+    <string name="movie_time">Время</string>
+    <string name="movie_quote">Слоган</string>
+    <string name="movie_producer">Режиссёр</string>
+    <string name="movie_budget">Бюджет</string>
+    <string name="movie_fees">Сборы в мире</string>
+    <string name="movie_age">Возраст</string>
+    <string name="movie_my_review_text">мой отзыв</string>
+
+    <string name="profile_email">E-mail</string>
+    <string name="profile_avatar_link">Ссылка на аватарку</string>
+    <string name="profile_name">Имя</string>
+    <string name="profile_birth_date">Дата рождения</string>
+    <string name="profile_gender">Пол</string>
+    <string name="profile_save_btn_text">Сохранить</string>
+    <string name="profile_sign_out_btn_text">Выйти из аккаунта</string>
+
+    <string name="review_dialog_add_review_text">Оставить отзыв</string>
+    <string name="review_dialog_review_text">Отзыв</string>
+    <string name="review_dialog_anonymous_check_text">Анонимный отзыв</string>
+    <string name="review_dialog_save_btn_text">Сохранить</string>
+    <string name="review_dialog_cancel_btn_text">Отмена</string>
+
+    <string name="sign_in_login_text">Логин</string>
+    <string name="sign_in_password_text">Пароль</string>
+    <string name="sign_in_sign_in_btn_text">Войти</string>
+    <string name="sign_in_sign_up_btn_text">Регистрация</string>
+
+    <string name="sign_up_sign_up_block_text">Регистрация</string>
+    <string name="sign_up_login_text">Логин</string>
+    <string name="sign_up_email_text">E-mail</string>
+    <string name="sign_up_name_text">Имя</string>
+    <string name="sign_up_password_text">Пароль</string>
+    <string name="sign_up_password_confirm_text">Подтвердите пароль</string>
+    <string name="sign_up_birth_date_text">Дата рождения</string>
+    <string name="sign_up_sign_up_btn_text">Зарегистрироваться</string>
+    <string name="sign_up_sign_in_btn_text">У меня уже есть аккаунт</string>
+
+    <string name="gender_picker_male_text">Мужчина</string>
+    <string name="gender_picker_female_text">Женщина</string>
 </resources>
