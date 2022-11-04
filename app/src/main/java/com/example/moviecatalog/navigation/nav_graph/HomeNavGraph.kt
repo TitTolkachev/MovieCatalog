@@ -42,10 +42,10 @@ fun NavGraphBuilder.homeNavGraph(
         composable(
             route = Screen.MovieScreen.route+"/{movieId}",
             arguments = listOf(navArgument("movieId") {
-                type = NavType.IntType
+                type = NavType.StringType
             })
         ) {
-            val movieId = it.arguments?.getInt("movieId")!!
+            val movieId = it.arguments?.getString("movieId")!!
             MovieScreen(MovieViewModel(navController), movieId)
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import com.example.moviecatalog.R
+import com.example.moviecatalog.network.dataclasses.LoginRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.view.sharedsamples.NewOutlinedButton
 import com.example.moviecatalog.view.sharedsamples.NewOutlinedTextField
@@ -46,6 +47,9 @@ fun SignInScreen(signInViewModel: SignInViewModel) {
         Animatable(0f)
     }
     EntryAnimations(scale, alpha)
+
+    val rememberScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Image(
         painter = image,
@@ -82,7 +86,7 @@ fun SignInScreen(signInViewModel: SignInViewModel) {
                 isValidInput,
                 LocalContext.current.getString(R.string.sign_in_sign_in_btn_text)
             ) {
-                signInViewModel.navigateToMainScreen()
+                signInViewModel.signIn(rememberScope, LoginRequestBody(login.value, password.value), context)
             }
             Button(
                 onClick = {

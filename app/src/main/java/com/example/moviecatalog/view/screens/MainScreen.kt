@@ -20,25 +20,29 @@ import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.times
+import com.example.moviecatalog.network.dataclasses.models.MovieElementModel
+import com.example.moviecatalog.util.DEFAULT_IMAGE
+import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.view.sharedsamples.NewBottomNavigationBar
 import com.example.moviecatalog.viewmodel.MainViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.absoluteValue
 
-@SuppressLint("FrequentlyChangedStateReadInComposition")
+@SuppressLint("FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
 
-    val favouriteMovies = remember {
-        mainViewModel.favouriteMovies
-    }
+    val context = LocalContext.current
+    val rememberScope = rememberCoroutineScope()
 
-    val favouriteItems = remember {
-        favouriteMovies.mapIndexed { i, s -> ImageItem(i, s) }.toMutableStateList()
+    mainViewModel.getFavouriteMovies(rememberScope, context)
+    val favouriteMovies = remember {
+        mainViewModel.favoriteMovies
     }
 
     val favouritesState = rememberLazyListState()
@@ -64,7 +68,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
             }
             item {
                 Column {
-                    if (favouriteItems.size != 0)
+                    if (favouriteMovies.size != 0)
                         Text(
                             text = LocalContext.current.getString(R.string.favourites_block_text),
                             modifier = Modifier
@@ -83,7 +87,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
                             .padding(top = 22.dp)
                             .animateItemPlacement()
                             .height(
-                                if (favouriteItems.size != 0)
+                                if (favouriteMovies.size != 0)
                                     172.dp
                                 else
                                     0.dp
@@ -91,7 +95,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
                         state = favouritesState,
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        items(favouriteItems, key = { it.id }) { item ->
+                        items(favouriteMovies, key = { it.id }) { item ->
                             val value =
                                 (1.2F - (favouritesState.layoutInfo.normalizedItemPosition(
                                     item.id
@@ -100,7 +104,6 @@ fun MainScreen(mainViewModel: MainViewModel) {
                                     .coerceAtLeast(1F)
 
                             NewMoviePreview(
-                                item.imageId,
                                 Modifier
                                     .graphicsLayer {
                                         scaleX = value
@@ -108,7 +111,6 @@ fun MainScreen(mainViewModel: MainViewModel) {
                                     }
                                     .padding(horizontal = ((value - 1F) * 50.dp) + 8.dp),
                                 mainViewModel::removeMovieFromFavourites,
-                                favouriteItems,
                                 item,
                                 mainViewModel::navigateToMovie
                             )
@@ -129,9 +131,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 )
             }
 
-            items(galleryMovies.value) { item ->
-                GalleryItem(item, mainViewModel::navigateToMovie)
-            }
+//            items(galleryMovies.value) { item ->
+//                GalleryItem(item, mainViewModel::navigateToMovie)
+//            }
         }
 
         Box(
@@ -144,7 +146,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
 
 
 @Composable
-private fun GalleryItem(item: Int, navigateToMovieFun: (image: Int) -> Unit) {
+private fun GalleryItem(
+    item: MovieElementModel,
+    navigateToMovieFun: (movie: MovieElementModel) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -221,28 +226,30 @@ private fun GalleryItem(item: Int, navigateToMovieFun: (image: Int) -> Unit) {
 }
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun NewMoviePreview(
-    id: Int,
     modifier: Modifier = Modifier,
-    removeMovieFun: (image: Int) -> Unit,
-    items: SnapshotStateList<ImageItem>,
-    item: ImageItem,
-    navigateToMovieFun: (image: Int) -> Unit
+    removeMovieFun: (movie: MovieElementModel) -> Unit,
+    item: MovieElementModel,
+    navigateToMovieFun: (movie: MovieElementModel) -> Unit
 ) {
     Box(modifier = modifier) {
-        Image(
-            painter = painterResource(id = id),
-            contentDescription = LocalContext.current.getString(R.string.movie_preview_content_description) + id.toString(),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(100.dp)
-                .height(144.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-                .clickable {
-                    navigateToMovieFun(item.imageId)
-                }
-        )
+        val image = loadPicture(url = item.poster.toString(), LocalContext.current,defaultImage = DEFAULT_IMAGE).value
+        if (image != null) {
+            Image(
+                bitmap = image.asImageBitmap(),
+                contentDescription = LocalContext.current.getString(R.string.movie_preview_content_description),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(144.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clickable {
+                        navigateToMovieFun(item)
+                    }
+            )
+        }
         Image(
             painter = painterResource(id = R.drawable.deletefromfavourites),
             contentDescription = LocalContext.current.getString(R.string.delete_from_favourites_icon_content_description),
@@ -250,8 +257,7 @@ fun NewMoviePreview(
                 .align(Alignment.TopEnd)
                 .padding(top = 4.dp, end = 4.dp)
                 .clickable {
-                    removeMovieFun(item.imageId)
-                    items.remove(item)
+                    removeMovieFun(item)
                 }
         )
     }
@@ -262,5 +268,3 @@ fun LazyListLayoutInfo.normalizedItemPosition(key: Any): Float =
         val center = 60F
         (it.offset.toFloat() - center) / center
     } ?: 0F
-
-data class ImageItem(val id: Int, val imageId: Int)

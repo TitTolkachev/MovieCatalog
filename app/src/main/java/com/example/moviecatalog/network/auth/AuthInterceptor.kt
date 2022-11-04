@@ -1,6 +1,7 @@
-package com.example.moviecatalog.network
+package com.example.moviecatalog.network.auth
 
 import android.util.Log
+import com.example.moviecatalog.network.Network
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -12,16 +13,16 @@ class AuthInterceptor : Interceptor {
         val request: Request = chain.request().newBuilder().apply {
             addHeader("accept", "application/json")
             addHeader("content-Type", "application/x-www-form-urlencoded")
-//            Network.token?.let {
-//                addHeader("Access-Token", "Bearer: ${it.accessToken}")
-//            }
+            Network.token?.let {
+                addHeader("Authorization", "Bearer ${it.token}")
+            }
         }.build()
 
         var response: Response? = null
 
         return try{
             response = chain.proceed(request)
-            Log.e("123456", response.message)
+            Log.d("123456", response.message)
             response
         } catch (e: Exception){
             response?.close()

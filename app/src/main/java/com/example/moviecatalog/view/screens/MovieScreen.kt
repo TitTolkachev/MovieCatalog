@@ -39,7 +39,7 @@ import java.time.ZonedDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
-fun MovieScreen(movieViewModel: MovieViewModel, movieId: Int) {
+fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
 
     val openReviewDialog = remember { mutableStateOf(false) }
     if (openReviewDialog.value)
@@ -65,7 +65,7 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: Int) {
             item {
                 Box {
                     Image(
-                        painter = painterResource(id = movieId),
+                        painter = painterResource(id = movieId.toInt()),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(),

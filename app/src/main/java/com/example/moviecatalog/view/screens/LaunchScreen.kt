@@ -34,7 +34,7 @@ fun LaunchScreen(launchViewModel: LaunchViewModel) {
             )
         )
         delay(500L)
-        launchViewModel.navigateToMainScreen()
+        launchViewModel.navigateToSignInScreen()
     }
     Box(
         modifier = Modifier

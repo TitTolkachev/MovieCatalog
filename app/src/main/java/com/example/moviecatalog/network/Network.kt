@@ -1,5 +1,9 @@
 package com.example.moviecatalog.network
 
+import com.example.moviecatalog.network.auth.AuthApi
+import com.example.moviecatalog.network.auth.AuthInterceptor
+import com.example.moviecatalog.network.dataclasses.TokenResponse
+import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -24,7 +28,7 @@ object Network {
             readTimeout(60, TimeUnit.SECONDS)
             writeTimeout(60, TimeUnit.SECONDS)
             addInterceptor(AuthInterceptor())
-            //Authenticator
+            //authenticator(Authenticator.JAVA_NET_AUTHENTICATOR)
             val logLevel = HttpLoggingInterceptor.Level.BODY
             addInterceptor(HttpLoggingInterceptor().setLevel(logLevel))
         }
@@ -49,4 +53,5 @@ object Network {
     var token: TokenResponse? = TokenResponse("")
 
     fun getAuthApi(): AuthApi = retrofit.create(AuthApi::class.java)
+    fun getFavoriteMoviesApi(): FavoriteMoviesApi = retrofit.create(FavoriteMoviesApi::class.java)
 }

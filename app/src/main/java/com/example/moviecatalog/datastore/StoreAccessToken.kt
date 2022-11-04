@@ -16,7 +16,7 @@ class StoreAccessToken(private val context: Context) {
         val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
     }
 
-    val getAccessToken: Flow<String>? = context.dataStore.data
+    val getAccessToken: Flow<String> = context.dataStore.data
         .map { preferences ->
             preferences[ACCESS_TOKEN_KEY] ?: ""
         }

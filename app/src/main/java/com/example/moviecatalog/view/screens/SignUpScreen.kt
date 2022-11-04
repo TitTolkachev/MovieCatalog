@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -27,9 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import com.example.moviecatalog.R
-import com.example.moviecatalog.datastore.StoreAccessToken
-import com.example.moviecatalog.network.AuthRepository
-import com.example.moviecatalog.network.RegisterRequestBody
+import com.example.moviecatalog.network.dataclasses.RegisterRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.view.sharedsamples.NewDatePicker
 import com.example.moviecatalog.view.sharedsamples.NewGenderCheckField
@@ -91,7 +88,6 @@ fun SignUpScreen(signUpViewModel: SignUpViewModel) {
     val image = painterResource(id = R.drawable.group_57)
 
     EntryAnimations(scale, alpha)
-
 
     Box {
         Image(
@@ -181,10 +177,17 @@ fun SignUpScreen(signUpViewModel: SignUpViewModel) {
             BottomButtons(
                 isValidInput = isValidInput,
                 scale.value == 0f,
-                signUpViewModel.repository,
                 localContext,
                 signUpViewModel::signUp,
-                signUpViewModel::navigateToSignInScreen
+                signUpViewModel::navigateToSignInScreen,
+                RegisterRequestBody(
+                    "TestString",
+                    "string",
+                    "12345678",
+                    "test@test.com",
+                    "2022-10-31T13:09:18.709Z",
+                    0
+                )
             )
         }
     }
@@ -237,10 +240,10 @@ private fun calculateTopPadding(image: Painter): Dp {
 fun BottomButtons(
     isValidInput: Boolean,
     isClickable: Boolean,
-    repository: AuthRepository,
-    ctx: Context,
-    signUpFun: () -> Unit,
-    navigateToSignInScreenFun: () -> Unit
+    context: Context,
+    signUpFun: (scope: CoroutineScope, b: RegisterRequestBody, c: Context) -> Unit,
+    navigateToSignInScreenFun: () -> Unit,
+    registerRequestBody: RegisterRequestBody
 ) {
 
     val scopeRemember = rememberCoroutineScope()
@@ -253,29 +256,11 @@ fun BottomButtons(
             LocalContext.current.getString(R.string.sign_up_sign_up_btn_text)
         ) {
             if (isClickable) {
-                scopeRemember.launch(Dispatchers.IO) {
-                    repository.register(
-                        RegisterRequestBody(
-                            "TestString",
-                            "string",
-                            "12345678",
-                            "test@test.com",
-                            "2022-10-31T13:09:18.709Z",
-                            0
-                        )
-                    )
-                        .collect { result ->
-                            result.onSuccess {
-                                Log.e("123456", it.token)
-                                StoreAccessToken(ctx).saveAccessToken(it.token)
-                            }.onFailure {
-                                Log.e("123456", "Not collected")
-                            }
-                        }
-                    launch(Dispatchers.Main) {
-                        signUpFun()
-                    }
-                }
+                signUpFun(
+                    scopeRemember,
+                    registerRequestBody,
+                    context
+                )
             }
         }
         Button(
