@@ -1,55 +1,88 @@
 package com.example.moviecatalog.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.example.moviecatalog.R
-import com.example.moviecatalog.dataclasses.MovieData
-import com.example.moviecatalog.view.screens.MovieReview
-import java.time.ZonedDateTime
+import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
+import com.example.moviecatalog.network.dataclasses.models.ProfileModel
+import com.example.moviecatalog.network.movie.MovieRepository
+import com.example.moviecatalog.network.user.UserRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+private val movieRepository = MovieRepository()
+private val userRepository = UserRepository()
 
 class MovieViewModel(private val navController: NavController) : ViewModel() {
 
-    val details = MovieData(
-        "Побег из Шоушенка",
-        1994,
-        "США",
-        142,
-        "«Страх - это кандалы. Надежда - это свобода»",
-        "Бухгалтер Энди Дюфрейн обвинён в убийстве собственной жены и её любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решётки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, обладающий живым умом и доброй душой, находит подход как к заключённым, так и к охранникам, добиваясь их особого к себе расположения",
-        "Фрэнк Дарабонт",
-        25000000,
-        28418687,
-        16
-    )
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    val movieReviews = mutableListOf(
-        MovieReview(
-            R.drawable.featured,
-            "Spike",
-            false,
-            6,
-            "Im the best yeah",
-            ZonedDateTime.now()
-        ),
-        MovieReview(
-            R.drawable.profileusericon,
-            "Leon",
-            true,
-            9,
-            "Сразу скажу, что фильм мне понравился. Люблю Фримэна, уважаю Роббинса. Читаю Кинга. Но рецензия красненькая.",
-            ZonedDateTime.now()
+    var user = mutableStateOf(
+        ProfileModel(
+            id = "1",
+            nickName = "123",
+            email = "123",
+            avatarLink = "123",
+            name = "123",
+            birthDate = "123",
+            gender = 0
         )
     )
 
-    val movieGenres = mutableListOf(
-        "драма",
-        "боевик",
-        "фантастик",
-        "мелодрама"
+    var details = mutableStateOf(
+        MovieDetailsModel(
+            id = "2",
+            year = 2000,
+            time = 120,
+            ageLimit = 16
+        )
     )
+
+    fun getMovieDetails(
+        coroutineScope: CoroutineScope,
+        context: Context,
+        movieId: String
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            movieRepository.getMoviesDetails(movieId)
+                .collect { result ->
+                    result.onSuccess {
+                        details.value = it
+                    }.onFailure {
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "Не удалось загрузить фильм",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+        }
+    }
+
+    fun getUser(
+        coroutineScope: CoroutineScope,
+        context: Context
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            userRepository.getProfile()
+                .collect { result ->
+                    result.onSuccess {
+                        user.value = it
+                    }.onFailure {
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "Не удалось получить данные о пользователе",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+        }
+    }
 
     fun navigateToMainScreen() {
         navController.popBackStack()

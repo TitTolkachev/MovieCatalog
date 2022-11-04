@@ -32,6 +32,7 @@ import com.example.moviecatalog.viewmodel.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalFoundationApi
 @Composable
@@ -47,8 +48,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
 
     val favouritesState = rememberLazyListState()
 
+    mainViewModel.getGalleryMovies(rememberScope, context)
     val galleryMovies = remember {
-        mutableStateOf(mainViewModel.galleryMovies)
+        mainViewModel.galleryMovies
     }
 
     Box(
@@ -60,11 +62,55 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 .padding(bottom = 68.dp)
         ) {
             item {
-                Image(
-                    painter = painterResource(id = R.drawable.featured),
-                    contentDescription = LocalContext.current.getString(R.string.poster_content_description),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (galleryMovies.isNotEmpty()) {
+                    Box {
+                        val image = loadPicture(
+                            url = galleryMovies[0].poster.toString(), LocalContext.current,
+                            defaultImage = DEFAULT_IMAGE
+                        ).value
+                        if (image != null) {
+                            Image(
+                                bitmap = image.asImageBitmap(),
+                                contentDescription = LocalContext.current.getString(R.string.poster_content_description),
+                                modifier = Modifier
+                                    .height(320.dp)
+                                    .fillMaxWidth(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.gradient),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(320.dp)
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter),
+                            contentScale = ContentScale.FillBounds
+                        )
+                        Button(
+                            onClick = { mainViewModel.navigateToMovie(galleryMovies[0]) },
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 244.dp)
+                                .height(44.dp)
+                                .width(160.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = LocalContext.current.getString(R.string.watch_it_btn_text),
+                                fontFamily = ibmPlexSansFamily,
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                    }
+                }
             }
             item {
                 Column {
@@ -131,9 +177,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 )
             }
 
-//            items(galleryMovies.value) { item ->
-//                GalleryItem(item, mainViewModel::navigateToMovie)
-//            }
+            items(galleryMovies) { item ->
+                GalleryItem(item, mainViewModel::navigateToMovie)
+            }
         }
 
         Box(
@@ -145,6 +191,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
 }
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 private fun GalleryItem(
     item: MovieElementModel,
@@ -159,14 +206,20 @@ private fun GalleryItem(
                 navigateToMovieFun(item)
             }
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.featured),
-            contentDescription = LocalContext.current.getString(R.string.gallery_item_content_description),
-            modifier = Modifier
-                .width(100.dp)
-                .height(144.dp),
-            contentScale = ContentScale.Crop
-        )
+        val image = loadPicture(
+            url = item.poster.toString(), LocalContext.current,
+            defaultImage = DEFAULT_IMAGE
+        ).value
+        if (image != null) {
+            Image(
+                bitmap = image.asImageBitmap(),
+                contentDescription = LocalContext.current.getString(R.string.gallery_item_content_description),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(144.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -175,7 +228,7 @@ private fun GalleryItem(
         ) {
             Column {
                 Text(
-                    text = "Люцифер",
+                    text = item.name.toString(),
                     modifier = Modifier,
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Bold,
@@ -184,7 +237,7 @@ private fun GalleryItem(
                     color = MaterialTheme.colorScheme.onSecondary
                 )
                 Text(
-                    text = "1999 • США",
+                    text = "${item.year} • ${item.country}",
                     modifier = Modifier.padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Normal,
@@ -192,8 +245,14 @@ private fun GalleryItem(
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
+                var genresText = ""
+                item.genres?.forEachIndexed { index, genreModel ->
+                    if (index != 0)
+                        genresText += ", "
+                    genresText += genreModel.name
+                }
                 Text(
-                    text = "драма, криминал",
+                    text = genresText,
                     modifier = Modifier.padding(top = 4.dp),
                     fontFamily = ibmPlexSansFamily,
                     fontWeight = FontWeight.Normal,
@@ -204,13 +263,22 @@ private fun GalleryItem(
             }
             Box(
                 modifier = Modifier
+                    .padding(top = 8.dp)
                     .clip(shape = RoundedCornerShape(16.dp))
                     .background(Color.DarkGray)
                     .width(56.dp)
                     .height(28.dp)
             ) {
+                var reviewsSum = 0f
+                item.reviews?.forEach {
+                    reviewsSum += it.rating
+                }
+                val rating = reviewsSum / item.reviews?.size!!
                 Text(
-                    text = "9.0",
+                    text = if (item.reviews.isNotEmpty())
+                        String.format("%.1f", rating)
+                    else
+                        "-",
                     modifier = Modifier
                         .align(Alignment.Center)
                         .offset(y = (-1).dp),
@@ -235,7 +303,11 @@ fun NewMoviePreview(
     navigateToMovieFun: (movie: MovieElementModel) -> Unit
 ) {
     Box(modifier = modifier) {
-        val image = loadPicture(url = item.poster.toString(), LocalContext.current,defaultImage = DEFAULT_IMAGE).value
+        val image = loadPicture(
+            url = item.poster.toString(),
+            LocalContext.current,
+            defaultImage = DEFAULT_IMAGE
+        ).value
         if (image != null) {
             Image(
                 bitmap = image.asImageBitmap(),

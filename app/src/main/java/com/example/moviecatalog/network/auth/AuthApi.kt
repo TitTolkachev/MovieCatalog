@@ -1,8 +1,8 @@
 package com.example.moviecatalog.network.auth
 
-import com.example.moviecatalog.network.dataclasses.LoginRequestBody
-import com.example.moviecatalog.network.dataclasses.RegisterRequestBody
-import com.example.moviecatalog.network.dataclasses.TokenResponse
+import com.example.moviecatalog.network.dataclasses.requestbodies.LoginRequestBody
+import com.example.moviecatalog.network.dataclasses.requestbodies.RegisterRequestBody
+import com.example.moviecatalog.network.dataclasses.responses.TokenResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 

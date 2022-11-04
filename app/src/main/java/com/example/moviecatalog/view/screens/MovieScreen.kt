@@ -16,9 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,30 +30,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviecatalog.R
+import com.example.moviecatalog.network.dataclasses.models.GenreModel
+import com.example.moviecatalog.network.dataclasses.models.ProfileModel
+import com.example.moviecatalog.network.dataclasses.models.ReviewModel
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.ui.theme.montserratFamily
+import com.example.moviecatalog.util.DEFAULT_IMAGE
+import com.example.moviecatalog.util.DEFAULT_PROFILE_IMAGE
+import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.viewmodel.MovieViewModel
 import com.example.moviecatalog.viewmodel.ReviewViewModel
 import com.google.accompanist.flowlayout.FlowRow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.ZonedDateTime
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalMaterial3Api
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
 fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
 
+    val rememberScope = rememberCoroutineScope()
+
+    movieViewModel.getMovieDetails(rememberScope, LocalContext.current, movieId)
+
+    movieViewModel.getUser(rememberScope, LocalContext.current)
+    val user = remember {
+        movieViewModel.user.value
+    }
+
     val openReviewDialog = remember { mutableStateOf(false) }
     if (openReviewDialog.value)
         ReviewDialog(openReviewDialog, ReviewViewModel(movieViewModel))
-
-    val movieGenres = remember {
-        movieViewModel.movieGenres
-    }
-
-    val movieReviews = remember {
-        movieViewModel.movieReviews
-    }
 
     val state = rememberLazyListState()
 
@@ -64,39 +75,49 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
         ) {
             item {
                 Box {
-                    Image(
-                        painter = painterResource(id = movieId.toInt()),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
-                    Text(
-                        text = movieViewModel.details.name,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
-                        fontFamily = ibmPlexSansFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        fontSize = 36.sp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        maxLines = 4
-                    )
+                    val image = loadPicture(
+                        url = movieViewModel.details.value.poster.toString(), LocalContext.current,
+                        defaultImage = DEFAULT_IMAGE
+                    ).value
+                    if (image != null) {
+                        Image(
+                            bitmap = image.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    movieViewModel.details.value.name?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                            fontFamily = ibmPlexSansFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Normal,
+                            fontSize = 36.sp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            maxLines = 4
+                        )
+                    }
                 }
             }
             item {
-                Text(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    text = movieViewModel.details.description,
-                    fontFamily = ibmPlexSansFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Normal,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
+                movieViewModel.details.value.description?.let {
+                    Text(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        text = it,
+                        fontFamily = ibmPlexSansFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontStyle = FontStyle.Normal,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
             }
             item {
                 Box(
@@ -116,35 +137,41 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
                             Column {
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_year),
-                                    movieViewModel.details.year.toString()
+                                    movieViewModel.details.value.year.toString()
                                 )
-                                AboutMovieRowSample(
-                                    LocalContext.current.getString(R.string.movie_country),
-                                    movieViewModel.details.country
-                                )
+                                movieViewModel.details.value.country?.let {
+                                    AboutMovieRowSample(
+                                        LocalContext.current.getString(R.string.movie_country),
+                                        it
+                                    )
+                                }
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_time),
-                                    movieViewModel.details.time.toString() + " мин."
+                                    movieViewModel.details.value.time.toString() + " мин."
                                 )
-                                AboutMovieRowSample(
-                                    LocalContext.current.getString(R.string.movie_tagline),
-                                    movieViewModel.details.tagline
-                                )
-                                AboutMovieRowSample(
-                                    LocalContext.current.getString(R.string.movie_director),
-                                    movieViewModel.details.director
-                                )
+                                movieViewModel.details.value.tagline?.let {
+                                    AboutMovieRowSample(
+                                        LocalContext.current.getString(R.string.movie_tagline),
+                                        it
+                                    )
+                                }
+                                movieViewModel.details.value.director?.let {
+                                    AboutMovieRowSample(
+                                        LocalContext.current.getString(R.string.movie_director),
+                                        it
+                                    )
+                                }
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_budget),
-                                    "\$" + movieViewModel.details.budget.toString()
+                                    "\$" + movieViewModel.details.value.budget.toString()
                                 )
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_fees),
-                                    "\$" + movieViewModel.details.fees.toString()
+                                    "\$" + movieViewModel.details.value.fees.toString()
                                 )
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_age_limit),
-                                    "${movieViewModel.details.ageLimit}+"
+                                    "${movieViewModel.details.value.ageLimit}+"
                                 )
                             }
                         }
@@ -160,7 +187,9 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
                         LocalContext.current.getString(R.string.genres_block_text), Modifier
                             .padding(bottom = 8.dp)
                     )
-                    MovieGenresItems(movieGenres)
+                    if (movieViewModel.details.value.genres != null) {
+                        MovieGenresItems(movieViewModel.details.value.genres!!)
+                    }
                 }
             }
             item {
@@ -177,15 +206,16 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
                             LocalContext.current.getString(R.string.reviews_block_text), Modifier
                                 .padding(bottom = 8.dp)
                         )
-                        Image(
-                            painter = painterResource(id = R.drawable.plus_icon),
-                            contentDescription = LocalContext.current.getString(R.string.add_review_icon_content_description),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { openReviewDialog.value = true }
-                        )
+                        if (!checkIfThereIsMyReview(movieViewModel.details.value.reviews, user))
+                            Image(
+                                painter = painterResource(id = R.drawable.plus_icon),
+                                contentDescription = LocalContext.current.getString(R.string.add_review_icon_content_description),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable { openReviewDialog.value = true }
+                            )
                     }
-                    MovieReviewsItems(movieReviews)
+                    MovieReviewsItems(movieViewModel.details.value.reviews, user)
                 }
             }
         }
@@ -200,7 +230,12 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
         )
 
         if (isTopPanelVisible) {
-            TopMovieBar(movieViewModel::navigateToMainScreen, movieViewModel.details.name)
+            movieViewModel.details.value.name?.let {
+                TopMovieBar(
+                    movieViewModel::navigateToMainScreen,
+                    it
+                )
+            }
         }
     }
 }
@@ -247,17 +282,18 @@ private fun TopMovieBar(navigateToMainScreenFun: () -> Unit, movieName: String) 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun MovieReviewsItems(MovieReviews: List<MovieReview>) {
+private fun MovieReviewsItems(MovieReviews: MutableList<ReviewModel>?, user: ProfileModel) {
     Column(modifier = Modifier) {
-        MovieReviews.forEach {
-            MovieReviewsItem(it)
+        MovieReviews?.forEach {
+            MovieReviewsItem(it, user)
         }
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun MovieReviewsItem(review: MovieReview) {
+private fun MovieReviewsItem(review: ReviewModel, user: ProfileModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -282,29 +318,37 @@ private fun MovieReviewsItem(review: MovieReview) {
                         .align(Alignment.CenterStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        contentScale = ContentScale.Crop,
-                        painter = painterResource(id = review.image),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clip(CircleShape)
-                            .size(40.dp)
-                    )
-                    if (review.isMine) {
+                    val image = review.author.avatar?.let {
+                        loadPicture(
+                            url = it, LocalContext.current,
+                            defaultImage = DEFAULT_PROFILE_IMAGE
+                        ).value
+                    }
+                    if (image != null) {
+                        Image(
+                            contentScale = ContentScale.Crop,
+                            bitmap = image.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clip(CircleShape)
+                                .size(40.dp)
+                        )
+                    }
+                    if (review.author.userId == user.id) {
                         Column(
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .width(214.dp)
                         ) {
-                            H3TextSample(text = review.author, Modifier)
+                            review.author.nickName?.let { H3TextSample(text = it, Modifier) }
                             SmallGrayTextSample(
                                 LocalContext.current.getString(R.string.movie_my_review_text),
                                 Modifier
                             )
                         }
                     } else {
-                        H3TextSample(text = review.author, Modifier)
+                        review.author.nickName?.let { H3TextSample(text = it, Modifier) }
                     }
                 }
                 Box(
@@ -318,26 +362,26 @@ private fun MovieReviewsItem(review: MovieReview) {
                     Text(
                         modifier = Modifier
                             .align(Alignment.Center),
-                        text = review.stars.toString(),
+                        text = review.rating.toString(),
                         textAlign = TextAlign.Center
                     )
                 }
             }
-            ReviewTextSample(text = review.text)
+            review.reviewText?.let { ReviewTextSample(text = it) }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
                 SmallGrayTextSample(
-                    "${review.date.dayOfMonth}." +
-                            "${review.date.month.value}." +
-                            "${review.date.year}",
+                    "${ZonedDateTime.parse(review.createDateTime).dayOfMonth}." +
+                            "${ZonedDateTime.parse(review.createDateTime).month.value}." +
+                            "${ZonedDateTime.parse(review.createDateTime).year}",
                     Modifier
                         .align(Alignment.CenterStart)
                         .padding(top = 4.dp)
                 )
 
-                if (review.isMine)
+                if (review.author.userId == user.id)
                     Row(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -362,13 +406,13 @@ private fun MovieReviewsItem(review: MovieReview) {
 }
 
 @Composable
-private fun MovieGenresItems(movieGenres: List<String>) {
+private fun MovieGenresItems(movieGenres: MutableList<GenreModel>) {
     FlowRow(
         mainAxisSpacing = 8.dp,
         crossAxisSpacing = 8.dp
     ) {
         movieGenres.forEach {
-            MovieGenreItem(text = it)
+            it.name?.let { it1 -> MovieGenreItem(text = it1) }
         }
     }
 }
@@ -467,11 +511,15 @@ private fun ReviewTextSample(text: String) {
     )
 }
 
-data class MovieReview(
-    val image: Int,
-    val author: String,
-    val isMine: Boolean,
-    val stars: Int,
-    val text: String,
-    val date: ZonedDateTime
-)
+private fun checkIfThereIsMyReview(
+    movieReviews: MutableList<ReviewModel>?,
+    user: ProfileModel
+): Boolean {
+    var res = false
+    movieReviews?.forEach {
+        if (it.author.userId == user.id)
+            res = true
+    }
+
+    return res
+}

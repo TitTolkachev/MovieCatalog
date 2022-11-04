@@ -1,4 +1,4 @@
-package com.example.moviecatalog.network.dataclasses
+package com.example.moviecatalog.network.dataclasses.responses
 
 import com.example.moviecatalog.network.dataclasses.models.MovieElementModel
 

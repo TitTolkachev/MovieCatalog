@@ -2,7 +2,7 @@ package com.example.moviecatalog.network.favoritemovies
 
 import android.util.Log
 import com.example.moviecatalog.network.Network
-import com.example.moviecatalog.network.dataclasses.FavoriteMoviesResponse
+import com.example.moviecatalog.network.dataclasses.responses.FavoriteMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,7 +15,6 @@ class FavoriteMoviesRepository {
     suspend fun getMovies(): Flow<Result<FavoriteMoviesResponse>> = flow {
         try {
             val moviesData = api.getMovies()
-            Log.d("123456789", moviesData.toString())
             emit(Result.success(moviesData))
         } catch (e: Exception) {
             Log.e("12345678910", e.message.toString())

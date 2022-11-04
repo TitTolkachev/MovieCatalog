@@ -13,6 +13,7 @@
     <string name="heart_icon_content_description">Heart</string>
     <string name="calendar_icon_content_description">Calendar Icon</string>
 
+    <string name="watch_it_btn_text">Смотреть</string>
     <string name="favourites_block_text">Избранное</string>
     <string name="gallery_block_text">Галерея</string>
     <string name="about_film_block_text">О фильме</string>

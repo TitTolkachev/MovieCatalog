@@ -1,6 +1,6 @@
 package com.example.moviecatalog.network.favoritemovies
 
-import com.example.moviecatalog.network.dataclasses.FavoriteMoviesResponse
+import com.example.moviecatalog.network.dataclasses.responses.FavoriteMoviesResponse
 import retrofit2.http.GET
 
 interface FavoriteMoviesApi {

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import com.example.moviecatalog.R
-import com.example.moviecatalog.network.dataclasses.LoginRequestBody
+import com.example.moviecatalog.network.dataclasses.requestbodies.LoginRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.view.sharedsamples.NewOutlinedButton
 import com.example.moviecatalog.view.sharedsamples.NewOutlinedTextField

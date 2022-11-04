@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,28 +30,35 @@ import com.example.moviecatalog.viewmodel.ProfileViewModel
 @Composable
 fun ProfileScreen(profileViewModel: ProfileViewModel) {
 
+    val rememberScope = rememberCoroutineScope()
+
+    profileViewModel.getProfileDetails(rememberScope, LocalContext.current)
+    val user = remember {
+        profileViewModel.user
+    }
+
     val email = remember {
-        mutableStateOf(profileViewModel.details.email)
+        mutableStateOf(user.email)
     }
 
     val avatarLink = remember {
-        mutableStateOf(profileViewModel.details.avatarLink)
+        mutableStateOf(user.avatarLink!!)
     }
 
     val name = remember {
-        mutableStateOf(profileViewModel.details.name)
+        mutableStateOf(user.name)
     }
 
     val birthDate = remember {
-        mutableStateOf(profileViewModel.details.birthDate)
+        mutableStateOf(user.birthDate)
     }
 
     val isMaleChosen = remember {
-        mutableStateOf(profileViewModel.details.gender == 0)
+        mutableStateOf(user.gender == 0)
     }
 
     val isFemaleChosen = remember {
-        mutableStateOf(profileViewModel.details.gender == 1)
+        mutableStateOf(user.gender == 1)
     }
 
     val localContext = LocalContext.current

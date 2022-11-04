@@ -33,6 +33,7 @@ fun LaunchScreen(launchViewModel: LaunchViewModel) {
                 }
             )
         )
+        //StoreAccessToken().getAccessToken
         delay(500L)
         launchViewModel.navigateToSignInScreen()
     }

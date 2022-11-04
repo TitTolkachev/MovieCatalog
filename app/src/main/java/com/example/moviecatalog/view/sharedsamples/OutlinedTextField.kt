@@ -34,10 +34,10 @@ fun NewOutlinedTextField(
             .fillMaxWidth(),
         placeholder = {
             Text(
-                text = placeholderText,
-                fontFamily = ibmPlexSansFamily,
-                fontSize = 14.sp
-            )
+                    text = placeholderText,
+                    fontFamily = ibmPlexSansFamily,
+                    fontSize = 14.sp
+                )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = MaterialTheme.colorScheme.primary,

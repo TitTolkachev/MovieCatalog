@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import com.example.moviecatalog.R
-import com.example.moviecatalog.network.dataclasses.RegisterRequestBody
+import com.example.moviecatalog.network.dataclasses.requestbodies.RegisterRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.view.sharedsamples.NewDatePicker
 import com.example.moviecatalog.view.sharedsamples.NewGenderCheckField

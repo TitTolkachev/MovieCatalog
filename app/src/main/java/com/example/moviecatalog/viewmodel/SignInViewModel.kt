@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.auth.AuthRepository
-import com.example.moviecatalog.network.dataclasses.LoginRequestBody
+import com.example.moviecatalog.network.dataclasses.requestbodies.LoginRequestBody
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

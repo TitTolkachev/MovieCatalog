@@ -2,8 +2,10 @@ package com.example.moviecatalog.network
 
 import com.example.moviecatalog.network.auth.AuthApi
 import com.example.moviecatalog.network.auth.AuthInterceptor
-import com.example.moviecatalog.network.dataclasses.TokenResponse
+import com.example.moviecatalog.network.dataclasses.responses.TokenResponse
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesApi
+import com.example.moviecatalog.network.movie.MovieApi
+import com.example.moviecatalog.network.user.UserApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -54,4 +56,6 @@ object Network {
 
     fun getAuthApi(): AuthApi = retrofit.create(AuthApi::class.java)
     fun getFavoriteMoviesApi(): FavoriteMoviesApi = retrofit.create(FavoriteMoviesApi::class.java)
+    fun getMovieApi(): MovieApi = retrofit.create(MovieApi::class.java)
+    fun getUserApi(): UserApi = retrofit.create(UserApi::class.java)
 }

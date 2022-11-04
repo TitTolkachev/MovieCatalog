@@ -15,6 +15,7 @@ import com.example.moviecatalog.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 const val DEFAULT_IMAGE = R.drawable.icon_foreground
+const val DEFAULT_PROFILE_IMAGE = R.drawable.profileusericon
 
 @SuppressLint("UnrememberedMutableState")
 @ExperimentalCoroutinesApi
