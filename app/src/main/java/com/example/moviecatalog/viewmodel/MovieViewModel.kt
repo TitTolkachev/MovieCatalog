@@ -48,7 +48,9 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
             movieRepository.getMoviesDetails(movieId)
                 .collect { result ->
                     result.onSuccess {
-                        details.value = it
+                        launch(Dispatchers.Main) {
+                            details.value = it
+                        }
                     }.onFailure {
                         launch(Dispatchers.Main) {
                             Toast.makeText(
@@ -70,7 +72,9 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
             userRepository.getProfile()
                 .collect { result ->
                     result.onSuccess {
-                        user.value = it
+                        launch(Dispatchers.Main) {
+                            user.value = it
+                        }
                     }.onFailure {
                         launch(Dispatchers.Main) {
                             Toast.makeText(

@@ -2,7 +2,6 @@ package com.example.moviecatalog.network
 
 import com.example.moviecatalog.network.auth.AuthApi
 import com.example.moviecatalog.network.auth.AuthInterceptor
-import com.example.moviecatalog.network.dataclasses.responses.TokenResponse
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesApi
 import com.example.moviecatalog.network.movie.MovieApi
 import com.example.moviecatalog.network.user.UserApi
@@ -29,6 +28,7 @@ object Network {
             connectTimeout(15, TimeUnit.SECONDS)
             readTimeout(60, TimeUnit.SECONDS)
             writeTimeout(60, TimeUnit.SECONDS)
+            retryOnConnectionFailure(false)
             addInterceptor(AuthInterceptor())
             //authenticator(Authenticator.JAVA_NET_AUTHENTICATOR)
             val logLevel = HttpLoggingInterceptor.Level.BODY
@@ -52,7 +52,7 @@ object Network {
 
     private val retrofit: Retrofit = getRetrofit()
 
-    var token: TokenResponse? = TokenResponse("")
+    var token: String = ""
 
     fun getAuthApi(): AuthApi = retrofit.create(AuthApi::class.java)
     fun getFavoriteMoviesApi(): FavoriteMoviesApi = retrofit.create(FavoriteMoviesApi::class.java)

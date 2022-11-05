@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.times
+import androidx.navigation.NavController
 import com.example.moviecatalog.network.dataclasses.models.MovieElementModel
 import com.example.moviecatalog.util.DEFAULT_IMAGE
 import com.example.moviecatalog.util.loadPicture
@@ -36,22 +37,32 @@ import kotlin.math.absoluteValue
 @SuppressLint("FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(mainViewModel: MainViewModel) {
+fun MainScreen(navController: NavController) {
+
+    val mainViewModel = remember {
+        MainViewModel(navController)
+    }
 
     val context = LocalContext.current
     val rememberScope = rememberCoroutineScope()
 
-    mainViewModel.getFavouriteMovies(rememberScope, context)
+    val callInitFunctions = remember {
+        mutableStateOf(true)
+    }
+    if (callInitFunctions.value) {
+        mainViewModel.getGalleryMovies(rememberScope, context)
+        mainViewModel.getFavouriteMovies(rememberScope, context)
+        callInitFunctions.value = false
+    }
+
+    val galleryMovies = remember {
+        mainViewModel.galleryMovies
+    }
     val favouriteMovies = remember {
         mainViewModel.favoriteMovies
     }
 
     val favouritesState = rememberLazyListState()
-
-    mainViewModel.getGalleryMovies(rememberScope, context)
-    val galleryMovies = remember {
-        mainViewModel.galleryMovies
-    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -177,8 +188,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 )
             }
 
-            items(galleryMovies) { item ->
-                GalleryItem(item, mainViewModel::navigateToMovie)
+            itemsIndexed(galleryMovies) { index, item ->
+                if (index != 0)
+                    GalleryItem(item, mainViewModel::navigateToMovie)
             }
         }
 

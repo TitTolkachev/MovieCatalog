@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.network.dataclasses.requestbodies.LoginRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
@@ -28,7 +29,11 @@ import com.example.moviecatalog.viewmodel.SignInViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun SignInScreen(signInViewModel: SignInViewModel) {
+fun SignInScreen(navController: NavController) {
+
+    val signInViewModel = remember {
+        SignInViewModel(navController)
+    }
 
     val login = remember {
         mutableStateOf("")
@@ -73,8 +78,16 @@ fun SignInScreen(signInViewModel: SignInViewModel) {
             modifier = Modifier
                 .alpha(alpha.value)
         ) {
-            NewOutlinedTextField(login, LocalContext.current.getString(R.string.sign_in_login_text), false)
-            NewOutlinedTextField(password, LocalContext.current.getString(R.string.sign_in_password_text), true)
+            NewOutlinedTextField(
+                login,
+                LocalContext.current.getString(R.string.sign_in_login_text),
+                false
+            )
+            NewOutlinedTextField(
+                password,
+                LocalContext.current.getString(R.string.sign_in_password_text),
+                true
+            )
         }
 
         Column(
@@ -86,7 +99,11 @@ fun SignInScreen(signInViewModel: SignInViewModel) {
                 isValidInput,
                 LocalContext.current.getString(R.string.sign_in_sign_in_btn_text)
             ) {
-                signInViewModel.signIn(rememberScope, LoginRequestBody(login.value, password.value), context)
+                signInViewModel.signIn(
+                    rememberScope,
+                    LoginRequestBody(login.value, password.value),
+                    context
+                )
             }
             Button(
                 onClick = {

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.network.dataclasses.requestbodies.RegisterRequestBody
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
@@ -41,7 +42,11 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalMaterial3Api
 @Composable
-fun SignUpScreen(signUpViewModel: SignUpViewModel) {
+fun SignUpScreen(navController: NavController) {
+
+    val signUpViewModel = remember {
+        SignUpViewModel(navController)
+    }
 
     val login = remember {
         mutableStateOf("")

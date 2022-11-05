@@ -27,8 +27,10 @@ class MainViewModel(private val navController: NavController) : ViewModel() {
             favoriteMoviesRepository.getMovies()
                 .collect { result ->
                     result.onSuccess {
-                        it.movies.forEach { item ->
-                            favoriteMovies.add(item)
+                        launch(Dispatchers.Main) {
+                            it.movies.forEach { item ->
+                                favoriteMovies.add(item)
+                            }
                         }
                     }.onFailure {
                         launch(Dispatchers.Main) {
@@ -53,8 +55,10 @@ class MainViewModel(private val navController: NavController) : ViewModel() {
             movieRepository.getMovies()
                 .collect { result ->
                     result.onSuccess {
-                        it.movies.forEach { item ->
-                            galleryMovies.add(item)
+                        launch(Dispatchers.Main) {
+                            it.movies.forEach { item ->
+                                galleryMovies.add(item)
+                            }
                         }
                     }.onFailure {
                         launch(Dispatchers.Main) {

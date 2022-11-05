@@ -17,7 +17,7 @@ class AuthRepository {
     suspend fun register(body: RegisterRequestBody): Flow<Result<TokenResponse>> = flow {
         try {
             val tokenData = api.register(body)
-            Network.token = tokenData
+            Network.token = tokenData.token
             emit(Result.success(tokenData))
         } catch (e: Exception) {
             Log.e("12345678910", e.message.toString())
@@ -28,7 +28,7 @@ class AuthRepository {
     suspend fun login(body: LoginRequestBody): Flow<Result<TokenResponse>> = flow {
         try {
             val tokenData = api.login(body)
-            Network.token = tokenData
+            Network.token = tokenData.token
             emit(Result.success(tokenData))
         } catch (e: Exception) {
             Log.e("123456789101112", e.message.toString())

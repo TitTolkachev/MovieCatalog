@@ -3,6 +3,7 @@ package com.example.moviecatalog.view.screens
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,10 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.network.dataclasses.models.GenreModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
@@ -42,20 +41,30 @@ import com.example.moviecatalog.viewmodel.MovieViewModel
 import com.example.moviecatalog.viewmodel.ReviewViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalMaterial3Api
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
-fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
+fun MovieScreen(navController: NavController, movieId: String) {
 
+    val movieViewModel = remember {
+        MovieViewModel(navController)
+    }
+
+    val context = LocalContext.current
     val rememberScope = rememberCoroutineScope()
 
-    movieViewModel.getMovieDetails(rememberScope, LocalContext.current, movieId)
+    val callInitFunctions = remember {
+        mutableStateOf(true)
+    }
+    if (callInitFunctions.value) {
+        movieViewModel.getMovieDetails(rememberScope, context, movieId)
+        movieViewModel.getUser(rememberScope, context)
+        callInitFunctions.value = false
+    }
 
-    movieViewModel.getUser(rememberScope, LocalContext.current)
     val user = remember {
         movieViewModel.user.value
     }
@@ -67,7 +76,9 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
     val state = rememberLazyListState()
 
     val isTopPanelVisible =
-        state.firstVisibleItemIndex != 0 || state.firstVisibleItemScrollOffset.dp >= 200.dp
+        state.firstVisibleItemIndex != 0 || state.firstVisibleItemScrollOffset.dp >= 400.dp
+
+    val alpha = 1f - state.firstVisibleItemScrollOffset.dp/250.dp
 
     Surface(color = MaterialTheme.colorScheme.background) {
         LazyColumn(
@@ -84,8 +95,13 @@ fun MovieScreen(movieViewModel: MovieViewModel, movieId: String) {
                             bitmap = image.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.Crop
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            contentScale = ContentScale.Crop,
+                            alpha = if (state.firstVisibleItemIndex != 0)
+                                0f
+                            else
+                                alpha
                         )
                     }
                     movieViewModel.details.value.name?.let {
@@ -372,10 +388,11 @@ private fun MovieReviewsItem(review: ReviewModel, user: ProfileModel) {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                val year = review.createDateTime.subSequence(0, 4)
+                val month = review.createDateTime.subSequence(5, 7)
+                val day = review.createDateTime.subSequence(8, 10)
                 SmallGrayTextSample(
-                    "${ZonedDateTime.parse(review.createDateTime).dayOfMonth}." +
-                            "${ZonedDateTime.parse(review.createDateTime).month.value}." +
-                            "${ZonedDateTime.parse(review.createDateTime).year}",
+                    "${day}.${month}.${year}",
                     Modifier
                         .align(Alignment.CenterStart)
                         .padding(top = 4.dp)
@@ -520,6 +537,5 @@ private fun checkIfThereIsMyReview(
         if (it.author.userId == user.id)
             res = true
     }
-
     return res
 }

@@ -5,61 +5,83 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
+import com.example.moviecatalog.util.DEFAULT_IMAGE
+import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.view.sharedsamples.*
 import com.example.moviecatalog.viewmodel.ProfileViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalMaterial3Api
 @Composable
-fun ProfileScreen(profileViewModel: ProfileViewModel) {
+fun ProfileScreen(navController: NavController) {
+
+    val profileViewModel = remember {
+        ProfileViewModel(navController)
+    }
 
     val rememberScope = rememberCoroutineScope()
 
-    profileViewModel.getProfileDetails(rememberScope, LocalContext.current)
-    val user = remember {
-        profileViewModel.user
-    }
-
     val email = remember {
-        mutableStateOf(user.email)
+        mutableStateOf(profileViewModel.user.value.email)
     }
 
     val avatarLink = remember {
-        mutableStateOf(user.avatarLink!!)
+        mutableStateOf(profileViewModel.user.value.avatarLink)
     }
 
     val name = remember {
-        mutableStateOf(user.name)
+        mutableStateOf(profileViewModel.user.value.name)
     }
 
     val birthDate = remember {
-        mutableStateOf(user.birthDate)
+        mutableStateOf(profileViewModel.user.value.birthDate)
     }
 
     val isMaleChosen = remember {
-        mutableStateOf(user.gender == 0)
+        mutableStateOf(profileViewModel.user.value.gender == 0)
     }
 
     val isFemaleChosen = remember {
-        mutableStateOf(user.gender == 1)
+        mutableStateOf(profileViewModel.user.value.gender == 1)
     }
+
+    val callInitFunctions = remember {
+        mutableStateOf(true)
+    }
+    if (callInitFunctions.value) {
+        profileViewModel.getProfileDetails(
+            rememberScope,
+            LocalContext.current,
+            email,
+            avatarLink,
+            name,
+            birthDate,
+            isMaleChosen,
+            isFemaleChosen
+        )
+        callInitFunctions.value = false
+    }
+
 
     val localContext = LocalContext.current
 
@@ -68,7 +90,6 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             (avatarLink.value != "") &&
             (birthDate.value != "") &&
             (isMaleChosen.value || isFemaleChosen.value)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,12 +105,22 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.profileusericon),
-                    contentDescription = null
-                )
+                val image = loadPicture(
+                    url = profileViewModel.user.value.avatarLink, LocalContext.current,
+                    defaultImage = DEFAULT_IMAGE
+                ).value
+                if (image != null) {
+                    Image(
+                        contentScale = ContentScale.Crop,
+                        bitmap = image.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(88.dp)
+                    )
+                }
                 Text(
-                    text = "Leon",
+                    text = profileViewModel.user.value.nickName.toString(),
                     modifier = Modifier
                         .padding(start = 16.dp),
                     fontFamily = ibmPlexSansFamily,
@@ -156,7 +187,6 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
     }
 }
-
 
 @Composable
 private fun AboveInputFieldText(text: String) {

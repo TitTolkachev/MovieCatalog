@@ -25,42 +25,42 @@ fun NewOutlinedTextField(
     isPassword: Boolean
 ) {
     OutlinedTextField(
-        value = message.value,
-        onValueChange = { newText ->
-            message.value = newText
-        },
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .fillMaxWidth(),
-        placeholder = {
-            Text(
+            value = message.value,
+            onValueChange = { newText ->
+                message.value = newText
+            },
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
+            placeholder = {
+                Text(
                     text = placeholderText,
                     fontFamily = ibmPlexSansFamily,
                     fontSize = 14.sp
                 )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            placeholderColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            containerColor = Color.Transparent
-        ),
-        shape = RoundedCornerShape(8.dp),
-        textStyle = TextStyle(
-            fontFamily = ibmPlexSansFamily,
-            fontSize = 14.sp
-        ),
-        singleLine = true,
-        visualTransformation =
-        if (isPassword)
-            PasswordVisualTransformation()
-        else
-            VisualTransformation.None,
-        keyboardOptions =
-        if (isPassword)
-            KeyboardOptions(keyboardType = KeyboardType.Password)
-        else
-            KeyboardOptions.Default
-    )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                placeholderColor = MaterialTheme.colorScheme.secondary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                containerColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle(
+                fontFamily = ibmPlexSansFamily,
+                fontSize = 14.sp
+            ),
+            singleLine = true,
+            visualTransformation =
+            if (isPassword)
+                PasswordVisualTransformation()
+            else
+                VisualTransformation.None,
+            keyboardOptions =
+            if (isPassword)
+                KeyboardOptions(keyboardType = KeyboardType.Password)
+            else
+                KeyboardOptions.Default
+        )
 }

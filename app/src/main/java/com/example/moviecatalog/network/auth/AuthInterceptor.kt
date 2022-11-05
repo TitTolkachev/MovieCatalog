@@ -13,9 +13,7 @@ class AuthInterceptor : Interceptor {
         val request: Request = chain.request().newBuilder().apply {
             addHeader("accept", "application/json")
             addHeader("content-Type", "application/x-www-form-urlencoded")
-            Network.token?.let {
-                addHeader("Authorization", "Bearer ${it.token}")
-            }
+            addHeader("Authorization", "Bearer ${Network.token}")
         }.build()
 
         var response: Response? = null

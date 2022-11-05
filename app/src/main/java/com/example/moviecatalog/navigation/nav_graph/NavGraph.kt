@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import com.example.moviecatalog.navigation.ROOT_GRAPH_ROUTE
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.view.screens.LaunchScreen
-import com.example.moviecatalog.viewmodel.LaunchViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -21,16 +20,16 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun SetUpNavGraph(
     navController: NavHostController
-){
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Launch.route,
         route = ROOT_GRAPH_ROUTE
-    ){
+    ) {
         composable(
             route = Screen.Launch.route
-        ){
-            LaunchScreen(LaunchViewModel(navController))
+        ) {
+            LaunchScreen(navController)
         }
         homeNavGraph(navController = navController)
         authNavGraph(navController = navController)
