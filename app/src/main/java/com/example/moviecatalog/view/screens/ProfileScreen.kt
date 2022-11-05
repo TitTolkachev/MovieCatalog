@@ -137,7 +137,7 @@ fun ProfileScreen(navController: NavController) {
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_name))
             NewOutlinedTextField(name, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_birth_date))
-            NewDatePicker(context, birthDate, "")
+            NewDatePicker(context, birthDate, null,"")
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_gender))
             NewGenderCheckField(
                 isMaleChosen = isMaleChosen,

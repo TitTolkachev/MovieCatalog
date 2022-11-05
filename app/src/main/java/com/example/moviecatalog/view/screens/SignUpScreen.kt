@@ -38,7 +38,7 @@ import kotlinx.coroutines.*
 import java.util.*
 
 @DelicateCoroutinesApi
-@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
+@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition", "NewApi")
 @RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalMaterial3Api
 @Composable
@@ -64,6 +64,9 @@ fun SignUpScreen(navController: NavController) {
         mutableStateOf("")
     }
     val datePicked = remember {
+        mutableStateOf("")
+    }
+    val birthDate = remember {
         mutableStateOf("")
     }
     val isMaleChosen = remember {
@@ -163,6 +166,7 @@ fun SignUpScreen(navController: NavController) {
                     NewDatePicker(
                         localContext,
                         datePicked,
+                        birthDate,
                         LocalContext.current.getString(R.string.sign_up_birth_date_text)
                     )
                     NewGenderCheckField(
@@ -186,12 +190,13 @@ fun SignUpScreen(navController: NavController) {
                 signUpViewModel::signUp,
                 signUpViewModel::navigateToSignInScreen,
                 RegisterRequestBody(
-                    "TestString",
-                    "string",
-                    "12345678",
-                    "test@test.com",
-                    "2022-10-31T13:09:18.709Z",
-                    0
+                    login.value,
+                    name.value,
+                    password.value,
+                    email.value,
+                    birthDate.value,
+                    if (isMaleChosen.value) 0
+                    else 1
                 )
             )
         }
