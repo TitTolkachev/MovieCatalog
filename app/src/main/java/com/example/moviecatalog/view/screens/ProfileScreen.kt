@@ -82,8 +82,7 @@ fun ProfileScreen(navController: NavController) {
         callInitFunctions.value = false
     }
 
-
-    val localContext = LocalContext.current
+    val context = LocalContext.current
 
     val isValidInput = (email.value != "") &&
             (name.value != "") &&
@@ -138,7 +137,7 @@ fun ProfileScreen(navController: NavController) {
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_name))
             NewOutlinedTextField(name, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_birth_date))
-            NewDatePicker(localContext, birthDate, "")
+            NewDatePicker(context, birthDate, "")
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_gender))
             NewGenderCheckField(
                 isMaleChosen = isMaleChosen,
@@ -158,7 +157,7 @@ fun ProfileScreen(navController: NavController) {
             }
             Button(
                 onClick = {
-                    profileViewModel.navigateToSignInScreen()
+                    profileViewModel.signOut(rememberScope, context)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -6,7 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
+import com.example.moviecatalog.network.Network
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.network.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -69,11 +71,19 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
         }
     }
 
+    fun signOut(coroutineScope: CoroutineScope, context: Context) {
+        coroutineScope.launch(Dispatchers.IO) {
+            StoreAccessToken(context).saveAccessToken("")
+        }
+        Network.token = ""
+        navigateToSignInScreen()
+    }
+
     fun navigateToMainScreen() {
         navController.popBackStack()
     }
 
-    fun navigateToSignInScreen() {
+    private fun navigateToSignInScreen() {
         navController.popBackStack()
         navController.popBackStack()
         navController.navigate(Screen.SignIn.route)
