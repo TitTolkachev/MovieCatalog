@@ -35,4 +35,13 @@ class AuthRepository {
             emit(Result.failure(Throwable(e)))
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun logout() = flow {
+        try {
+            api.logout()
+            emit(Result.success(true))
+        } catch (e: Exception) {
+            emit(Result.failure(Throwable(e)))
+        }
+    }.flowOn(Dispatchers.IO)
 }

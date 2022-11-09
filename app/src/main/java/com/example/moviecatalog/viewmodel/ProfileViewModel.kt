@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.Network
+import com.example.moviecatalog.network.auth.AuthRepository
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.network.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 private val userRepository = UserRepository()
+private val authRepository = AuthRepository()
 
 class ProfileViewModel(private val navController: NavController) : ViewModel() {
 
@@ -71,8 +73,9 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
         }
     }
 
-    fun signOut(coroutineScope: CoroutineScope, context: Context) {
+    fun logout(coroutineScope: CoroutineScope, context: Context) {
         coroutineScope.launch(Dispatchers.IO) {
+            authRepository.logout()
             StoreAccessToken(context).saveAccessToken("")
         }
         Network.token = ""

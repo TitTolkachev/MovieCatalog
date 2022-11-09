@@ -1,12 +1,11 @@
-package com.example.moviecatalog.network.auth
+package com.example.moviecatalog.network
 
 import android.util.Log
-import com.example.moviecatalog.network.Network
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
-class AuthInterceptor : Interceptor {
+class MyInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 

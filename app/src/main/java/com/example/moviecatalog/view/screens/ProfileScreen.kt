@@ -157,7 +157,7 @@ fun ProfileScreen(navController: NavController) {
             }
             Button(
                 onClick = {
-                    profileViewModel.signOut(rememberScope, context)
+                    profileViewModel.logout(rememberScope, context)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

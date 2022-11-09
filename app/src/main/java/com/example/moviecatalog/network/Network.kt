@@ -1,7 +1,6 @@
 package com.example.moviecatalog.network
 
 import com.example.moviecatalog.network.auth.AuthApi
-import com.example.moviecatalog.network.auth.AuthInterceptor
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesApi
 import com.example.moviecatalog.network.movie.MovieApi
 import com.example.moviecatalog.network.user.UserApi
@@ -29,7 +28,7 @@ object Network {
             readTimeout(60, TimeUnit.SECONDS)
             writeTimeout(60, TimeUnit.SECONDS)
             retryOnConnectionFailure(false)
-            addInterceptor(AuthInterceptor())
+            addInterceptor(MyInterceptor())
             //authenticator(Authenticator.JAVA_NET_AUTHENTICATOR)
             val logLevel = HttpLoggingInterceptor.Level.BODY
             addInterceptor(HttpLoggingInterceptor().setLevel(logLevel))
