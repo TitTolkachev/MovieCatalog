@@ -36,12 +36,11 @@ class AuthRepository {
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun logout() = flow {
+    suspend fun logout() {
         try {
             api.logout()
-            emit(Result.success(true))
         } catch (e: Exception) {
-            emit(Result.failure(Throwable(e)))
+            Log.e("12345678910111213", e.message.toString())
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }

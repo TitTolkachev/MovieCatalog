@@ -20,6 +20,7 @@ import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -30,11 +31,17 @@ import com.example.moviecatalog.util.DEFAULT_IMAGE
 import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.view.sharedsamples.NewBottomNavigationBar
 import com.example.moviecatalog.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@SuppressLint("FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition")
+@SuppressLint(
+    "FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition",
+    "MutableCollectionMutableState"
+)
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen(navController: NavController) {
@@ -46,21 +53,22 @@ fun MainScreen(navController: NavController) {
     val context = LocalContext.current
     val rememberScope = rememberCoroutineScope()
 
+    val galleryMovies = remember {
+        mainViewModel.galleryMovies
+    }
+    val favouriteMovies = remember {
+        mutableStateListOf<MovieElementModel>()
+    }
+
     val callInitFunctions = remember {
         mutableStateOf(true)
     }
     if (callInitFunctions.value) {
         mainViewModel.getGalleryMovies(rememberScope, context)
-        mainViewModel.getFavouriteMovies(rememberScope, context)
+        mainViewModel.getFavouriteMovies(favouriteMovies, rememberScope, context)
         callInitFunctions.value = false
     }
 
-    val galleryMovies = remember {
-        mainViewModel.galleryMovies
-    }
-    val favouriteMovies = remember {
-        mainViewModel.favoriteMovies
-    }
 
     val favouritesState = rememberLazyListState()
 
@@ -167,8 +175,10 @@ fun MainScreen(navController: NavController) {
                                         scaleY = value
                                     }
                                     .padding(horizontal = ((value - 1F) * 50.dp) + 8.dp),
-                                mainViewModel::removeMovieFromFavourites,
+                                mainViewModel,
+                                rememberScope,
                                 item,
+                                favouriteMovies,
                                 mainViewModel::navigateToMovie
                             )
                         }
@@ -310,8 +320,10 @@ private fun GalleryItem(
 @Composable
 fun NewMoviePreview(
     modifier: Modifier = Modifier,
-    removeMovieFun: (movie: MovieElementModel) -> Unit,
+    mainViewModel: MainViewModel,
+    coroutineScope: CoroutineScope,
     item: MovieElementModel,
+    favouriteMovies: SnapshotStateList<MovieElementModel>,
     navigateToMovieFun: (movie: MovieElementModel) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -334,16 +346,25 @@ fun NewMoviePreview(
                     }
             )
         }
-        Image(
-            painter = painterResource(id = R.drawable.deletefromfavourites),
-            contentDescription = LocalContext.current.getString(R.string.delete_from_favourites_icon_content_description),
+        Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 4.dp, end = 4.dp)
+                .width(25.dp)
+                .height(25.dp)
                 .clickable {
-                    removeMovieFun(item)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        mainViewModel.removeMovieFromFavourites(favouriteMovies, item, coroutineScope)
+                    }
                 }
-        )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.deletefromfavourites),
+                contentDescription = LocalContext.current.getString(R.string.delete_from_favourites_icon_content_description),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 4.dp, end = 4.dp)
+            )
+        }
     }
 }
 

@@ -21,4 +21,21 @@ class FavoriteMoviesRepository {
             emit(Result.failure(Throwable(e)))
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun addMovie(movieId: String) {
+        try {
+            api.postMovie(movieId)
+        } catch (e: Exception) {
+            Log.e("12345678910", e.message.toString())
+        }
+    }
+
+    suspend fun deleteMovie(movieId: String) {
+        try {
+            api.deleteMovie(movieId)
+        } catch (e: Exception) {
+            Log.e("12345678910", e.message.toString())
+        }
+    }
+
 }

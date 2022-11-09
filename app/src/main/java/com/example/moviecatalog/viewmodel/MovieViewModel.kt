@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
+import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesRepository
 import com.example.moviecatalog.network.movie.MovieRepository
 import com.example.moviecatalog.network.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 private val movieRepository = MovieRepository()
 private val userRepository = UserRepository()
+private val favoriteMoviesRepository = FavoriteMoviesRepository()
 
 class MovieViewModel(private val navController: NavController) : ViewModel() {
 
@@ -85,6 +87,15 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                         }
                     }
                 }
+        }
+    }
+
+    fun addMovieToFavourites(
+        movieId: String,
+        coroutineScope: CoroutineScope
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            favoriteMoviesRepository.addMovie(movieId)
         }
     }
 

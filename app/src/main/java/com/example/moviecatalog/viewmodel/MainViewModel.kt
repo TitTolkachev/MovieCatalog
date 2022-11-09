@@ -2,6 +2,7 @@ package com.example.moviecatalog.viewmodel
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.moviecatalog.navigation.Screen
@@ -17,9 +18,8 @@ private val movieRepository = MovieRepository()
 
 class MainViewModel(private val navController: NavController) : ViewModel() {
 
-    val favoriteMovies = mutableListOf<MovieElementModel>()
-
     fun getFavouriteMovies(
+        favouriteMovies: SnapshotStateList<MovieElementModel>,
         coroutineScope: CoroutineScope,
         context: Context
     ) {
@@ -29,7 +29,7 @@ class MainViewModel(private val navController: NavController) : ViewModel() {
                     result.onSuccess {
                         launch(Dispatchers.Main) {
                             it.movies.forEach { item ->
-                                favoriteMovies.add(item)
+                                favouriteMovies.add(item)
                             }
                         }
                     }.onFailure {
@@ -81,7 +81,16 @@ class MainViewModel(private val navController: NavController) : ViewModel() {
         navController.navigate(Screen.MovieScreen.route + "/${movieElementModel.id}")
     }
 
-    fun removeMovieFromFavourites(movieElementModel: MovieElementModel) {
-        favoriteMovies.remove(movieElementModel)
+    fun removeMovieFromFavourites(
+        favouriteMovies: SnapshotStateList<MovieElementModel>,
+        movieElementModel: MovieElementModel,
+        coroutineScope: CoroutineScope
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            favoriteMoviesRepository.deleteMovie(movieElementModel.id)
+            launch(Dispatchers.Main) {
+                favouriteMovies.remove(movieElementModel)
+            }
+        }
     }
 }

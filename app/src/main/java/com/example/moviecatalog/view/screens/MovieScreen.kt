@@ -40,7 +40,9 @@ import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.viewmodel.MovieViewModel
 import com.example.moviecatalog.viewmodel.ReviewViewModel
 import com.google.accompanist.flowlayout.FlowRow
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.reflect.KFunction2
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalMaterial3Api
@@ -78,7 +80,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
     val isTopPanelVisible =
         state.firstVisibleItemIndex != 0 || state.firstVisibleItemScrollOffset.dp >= 400.dp
 
-    val alpha = 1f - state.firstVisibleItemScrollOffset.dp/250.dp
+    val alpha = 1f - state.firstVisibleItemScrollOffset.dp / 250.dp
 
     Surface(color = MaterialTheme.colorScheme.background) {
         LazyColumn(
@@ -249,6 +251,9 @@ fun MovieScreen(navController: NavController, movieId: String) {
             movieViewModel.details.value.name?.let {
                 TopMovieBar(
                     movieViewModel::navigateToMainScreen,
+                    movieViewModel::addMovieToFavourites,
+                    movieId,
+                    rememberScope,
                     it
                 )
             }
@@ -257,7 +262,13 @@ fun MovieScreen(navController: NavController, movieId: String) {
 }
 
 @Composable
-private fun TopMovieBar(navigateToMainScreenFun: () -> Unit, movieName: String) {
+private fun TopMovieBar(
+    navigateToMainScreenFun: () -> Unit,
+    addMovie: KFunction2<String, CoroutineScope, Unit>,
+    movieId: String,
+    coroutineScope: CoroutineScope,
+    movieName: String
+) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -289,9 +300,17 @@ private fun TopMovieBar(navigateToMainScreenFun: () -> Unit, movieName: String) 
         )
         Image(
             painter = painterResource(id = R.drawable.unfilled_heart),
+//            if()
+//                R.drawable.unfilled_heart
+//            else
+//                R.drawable.heart
+//            ),
             contentDescription = LocalContext.current.getString(R.string.heart_icon_content_description),
             modifier = Modifier
                 .size(24.dp)
+                .clickable {
+                    addMovie(movieId, coroutineScope)
+                }
         )
     }
 }
