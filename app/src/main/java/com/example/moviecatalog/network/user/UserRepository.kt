@@ -20,12 +20,11 @@ class UserRepository {
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun putProfile(body: ProfileModel) = flow {
+    suspend fun putProfile(body: ProfileModel) {
         try {
-            emit(Result.success(api.putProfile(body)))
+            api.putProfile(body)
         } catch (e: Exception) {
             Log.e("12345678910", e.message.toString())
-            emit(Result.failure(Throwable(e)))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }

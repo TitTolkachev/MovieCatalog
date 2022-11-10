@@ -39,6 +39,7 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
         email: MutableState<String>,
         avatarLink: MutableState<String>,
         name: MutableState<String>,
+        datePicked: MutableState<String>,
         birthDate: MutableState<String>,
         isMaleChosen: MutableState<Boolean>,
         isFemaleChosen: MutableState<Boolean>
@@ -52,11 +53,12 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
                             email.value = it.email
                             avatarLink.value = it.avatarLink
                             name.value = it.name
-                            birthDate.value = "${
+                            datePicked.value = "${
                                 it.birthDate.subSequence(8, 10)
                             }.${
                                 it.birthDate.subSequence(5, 7)
                             }.${it.birthDate.subSequence(0, 4)}"
+                            birthDate.value = it.birthDate
                             isMaleChosen.value = it.gender == 0
                             isFemaleChosen.value = it.gender == 1
                         }
@@ -92,7 +94,12 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
         navController.navigate(Screen.SignIn.route)
     }
 
-    fun saveProfileChanges() {
+    fun saveProfileChanges(coroutineScope: CoroutineScope, body: ProfileModel) {
+
+        coroutineScope.launch (Dispatchers.IO){
+            userRepository.putProfile(body)
+        }
+
         navController.popBackStack()
         navController.navigate(Screen.Profile.route)
     }

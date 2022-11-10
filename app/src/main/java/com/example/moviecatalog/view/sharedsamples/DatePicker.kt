@@ -50,7 +50,8 @@ fun NewDatePicker(
     day = calendar.get(Calendar.DAY_OF_MONTH)
     calendar.time = Date()
 
-    val zonedDateNow = ZonedDateTime.ofInstant(ZonedDateTime.now().toInstant(), ZonedDateTime.now().offset)
+    val zonedDateNow =
+        ZonedDateTime.ofInstant(ZonedDateTime.now().toInstant(), ZonedDateTime.now().offset)
 
     val datePickerDialog = DatePickerDialog(
         context,
@@ -60,12 +61,14 @@ fun NewDatePicker(
             date.value += Year.toString()
 
             if (zonedDate != null) {
-                zonedDate.value = "$Year-${Month + 1}-$DayOfMonth" + "T"
+                zonedDate.value = "$Year-"
+                zonedDate.value += if (Month < 9) "0${Month + 1}-" else "${Month + 1}-"
+                zonedDate.value += if (DayOfMonth < 10) "0$DayOfMonth" + "T" else "$DayOfMonth" + "T"
                 zonedDate.value +=
-                        if (zonedDateNow.hour < 10)
-                            "0"
-                        else
-                            ""
+                    if (zonedDateNow.hour < 10)
+                        "0"
+                    else
+                        ""
                 zonedDate.value += zonedDateNow.hour.toString() + ":"
                 zonedDate.value +=
                     if (zonedDateNow.minute < 10)

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
+import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.util.DEFAULT_IMAGE
 import com.example.moviecatalog.util.loadPicture
@@ -53,8 +54,11 @@ fun ProfileScreen(navController: NavController) {
         mutableStateOf(profileViewModel.user.value.name)
     }
 
-    val birthDate = remember {
+    val datePicked = remember {
         mutableStateOf(profileViewModel.user.value.birthDate)
+    }
+    val birthDate = remember {
+        mutableStateOf("")
     }
 
     val isMaleChosen = remember {
@@ -75,6 +79,7 @@ fun ProfileScreen(navController: NavController) {
             email,
             avatarLink,
             name,
+            datePicked,
             birthDate,
             isMaleChosen,
             isFemaleChosen
@@ -87,7 +92,7 @@ fun ProfileScreen(navController: NavController) {
     val isValidInput = (email.value != "") &&
             (name.value != "") &&
             (avatarLink.value != "") &&
-            (birthDate.value != "") &&
+            (datePicked.value != "") &&
             (isMaleChosen.value || isFemaleChosen.value)
     Box(
         modifier = Modifier
@@ -137,7 +142,7 @@ fun ProfileScreen(navController: NavController) {
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_name))
             NewOutlinedTextField(name, "", false)
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_birth_date))
-            NewDatePicker(context, birthDate, null,"")
+            NewDatePicker(context, datePicked, birthDate, "")
             AboveInputFieldText(text = LocalContext.current.getString(R.string.profile_gender))
             NewGenderCheckField(
                 isMaleChosen = isMaleChosen,
@@ -153,7 +158,17 @@ fun ProfileScreen(navController: NavController) {
                 isValidInput = isValidInput,
                 buttonText = LocalContext.current.getString(R.string.profile_save_btn_text)
             ) {
-                profileViewModel.saveProfileChanges()
+                profileViewModel.saveProfileChanges(
+                    rememberScope, ProfileModel(
+                        profileViewModel.user.value.id,
+                        profileViewModel.user.value.nickName,
+                        email.value,
+                        avatarLink.value,
+                        name.value,
+                        birthDate.value,
+                        if (isMaleChosen.value) 0 else 1
+                    )
+                )
             }
             Button(
                 onClick = {
