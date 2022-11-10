@@ -97,7 +97,15 @@ fun MovieScreen(navController: NavController, movieId: String) {
     {
         launch(Dispatchers.Main) {
             movieViewModel.getUser(rememberScope, user, context)
-            movieViewModel.getMovieDetails(rememberScope, context, movieId, details, user, myReview, myReviewId)
+            movieViewModel.getMovieDetails(
+                rememberScope,
+                context,
+                movieId,
+                details,
+                user,
+                myReview,
+                myReviewId
+            )
         }
     }
 
@@ -411,22 +419,34 @@ private fun MovieReviewsItem(
                         .align(Alignment.CenterStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val image = review.author.avatar?.let {
-                        loadPicture(
-                            url = it, LocalContext.current,
-                            defaultImage = DEFAULT_PROFILE_IMAGE
-                        ).value
-                    }
-                    if (image != null) {
+                    if (review.author.avatar == "" || review.isAnonymous) {
                         Image(
                             contentScale = ContentScale.Crop,
-                            bitmap = image.asImageBitmap(),
+                            painter = painterResource(id = R.drawable.profileusericon),
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .clip(CircleShape)
                                 .size(40.dp)
                         )
+                    } else {
+                        val image = review.author.avatar?.let {
+                            loadPicture(
+                                url = it, LocalContext.current,
+                                defaultImage = DEFAULT_PROFILE_IMAGE
+                            ).value
+                        }
+                        if (image != null) {
+                            Image(
+                                contentScale = ContentScale.Crop,
+                                bitmap = image.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .clip(CircleShape)
+                                    .size(40.dp)
+                            )
+                        }
                     }
                     if (review.author.userId == user.id) {
                         Column(
@@ -434,15 +454,25 @@ private fun MovieReviewsItem(
                                 .padding(end = 8.dp)
                                 .width(214.dp)
                         ) {
-                            review.author.nickName?.let { H3TextSample(text = it, Modifier) }
+                            if (review.isAnonymous)
+                                H3TextSample(
+                                    text = LocalContext.current.getString(R.string.movie_anonymous_review_author),
+                                    Modifier
+                                )
+                            else
+                                review.author.nickName?.let { H3TextSample(text = it, Modifier) }
                             SmallGrayTextSample(
                                 LocalContext.current.getString(R.string.movie_my_review_text),
                                 Modifier
                             )
                         }
-                    } else {
+                    } else if (review.isAnonymous)
+                        H3TextSample(
+                            text = LocalContext.current.getString(R.string.movie_anonymous_review_author),
+                            Modifier
+                        )
+                    else
                         review.author.nickName?.let { H3TextSample(text = it, Modifier) }
-                    }
                 }
                 Box(
                     modifier = Modifier

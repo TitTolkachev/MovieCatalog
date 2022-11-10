@@ -31,6 +31,7 @@
     <string name="movie_fees">Сборы в мире</string>
     <string name="movie_age_limit">Возраст</string>
     <string name="movie_my_review_text">мой отзыв</string>
+    <string name="movie_anonymous_review_author">Анонимный пользователь</string>
 
     <string name="profile_email">E-mail</string>
     <string name="profile_avatar_link">Ссылка на аватарку</string>

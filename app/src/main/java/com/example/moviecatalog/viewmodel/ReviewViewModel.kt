@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 private val reviewRepository = ReviewRepository()
 
-class ReviewViewModel() : ViewModel() {
+class ReviewViewModel : ViewModel() {
 
     fun addReview(
         coroutineScope: CoroutineScope,

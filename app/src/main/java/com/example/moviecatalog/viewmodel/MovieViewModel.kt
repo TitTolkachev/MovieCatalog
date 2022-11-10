@@ -36,7 +36,7 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         myReview: MutableState<ReviewModifyModel>,
         myReviewId: MutableState<String?>
     ) {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(Dispatchers.IO) {
             movieRepository.getMoviesDetails(movieId)
                 .collect { result ->
                     result.onSuccess {
@@ -72,7 +72,7 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         user: MutableState<ProfileModel>,
         context: Context
     ) {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(Dispatchers.IO) {
             userRepository.getProfile()
                 .collect { result ->
                     result.onSuccess {
