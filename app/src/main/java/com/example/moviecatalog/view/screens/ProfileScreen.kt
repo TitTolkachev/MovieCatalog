@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
-import com.example.moviecatalog.util.DEFAULT_IMAGE
+import com.example.moviecatalog.util.DEFAULT_PROFILE_IMAGE
 import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.view.sharedsamples.*
 import com.example.moviecatalog.viewmodel.ProfileViewModel
@@ -111,7 +111,7 @@ fun ProfileScreen(navController: NavController) {
             ) {
                 val image = loadPicture(
                     url = profileViewModel.user.value.avatarLink, LocalContext.current,
-                    defaultImage = DEFAULT_IMAGE
+                    defaultImage = DEFAULT_PROFILE_IMAGE
                 ).value
                 if (image != null) {
                     Image(
