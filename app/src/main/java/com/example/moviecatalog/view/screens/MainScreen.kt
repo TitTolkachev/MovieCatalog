@@ -36,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+import kotlin.math.pow
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint(
@@ -283,19 +284,19 @@ private fun GalleryItem(
                     color = MaterialTheme.colorScheme.onSecondary
                 )
             }
+            var reviewsSum = 0f
+            item.reviews?.forEach {
+                reviewsSum += it.rating
+            }
+            val rating = reviewsSum / item.reviews?.size!!
             Box(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .clip(shape = RoundedCornerShape(16.dp))
-                    .background(Color.DarkGray)
+                    .background(calculateColorFun(rating))
                     .width(56.dp)
                     .height(28.dp)
             ) {
-                var reviewsSum = 0f
-                item.reviews?.forEach {
-                    reviewsSum += it.rating
-                }
-                val rating = reviewsSum / item.reviews?.size!!
                 Text(
                     text = if (item.reviews.isNotEmpty())
                         String.format("%.1f", rating)
@@ -315,6 +316,13 @@ private fun GalleryItem(
     }
 }
 
+fun calculateColorFun(rating: Float): Color {
+    return Color(
+        ((20f - 2f * rating) / 10f).coerceAtLeast(0f).coerceAtMost(1f).pow(2),
+        ((2f * rating) / 10f).pow(3).coerceAtLeast(0f).coerceAtMost(1f) / 255f * 185f,
+        ((rating - 7f) / 3f).coerceAtLeast(0f).coerceAtMost(1f) / 255f * 34f
+    )
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
@@ -353,7 +361,11 @@ fun NewMoviePreview(
                 .height(25.dp)
                 .clickable {
                     coroutineScope.launch(Dispatchers.IO) {
-                        mainViewModel.removeMovieFromFavourites(favouriteMovies, item, coroutineScope)
+                        mainViewModel.removeMovieFromFavourites(
+                            favouriteMovies,
+                            item,
+                            coroutineScope
+                        )
                     }
                 }
         ) {

@@ -449,7 +449,7 @@ private fun MovieReviewsItem(
                         .width(42.dp)
                         .height(28.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(calculateColorFun(review.rating.toFloat()))
                         .align(Alignment.CenterEnd)
                 ) {
                     Text(
