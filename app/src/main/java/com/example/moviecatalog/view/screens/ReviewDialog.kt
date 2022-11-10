@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,13 +21,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.moviecatalog.R
+import com.example.moviecatalog.network.dataclasses.models.ReviewModifyModel
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.ui.theme.montserratFamily
+import com.example.moviecatalog.viewmodel.MovieViewModel
 import com.example.moviecatalog.viewmodel.ReviewViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun ReviewDialog(openReviewDialog: MutableState<Boolean>, reviewViewModel: ReviewViewModel) {
+fun ReviewDialog(
+    openReviewDialog: MutableState<Boolean>,
+    reviewViewModel: ReviewViewModel,
+    movieViewModel: MovieViewModel,
+    movieId: String
+) {
 
     val reviewText = remember {
         mutableStateOf(reviewViewModel.reviewText)
@@ -41,6 +45,8 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>, reviewViewModel: Revie
     val rating = remember {
         mutableStateOf(reviewViewModel.rating)
     }
+
+    val rememberScope = rememberCoroutineScope()
 
     Dialog(
         onDismissRequest = { openReviewDialog.value = false },
@@ -160,7 +166,11 @@ fun ReviewDialog(openReviewDialog: MutableState<Boolean>, reviewViewModel: Revie
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp),
-                    onClick = { openReviewDialog.value = false }) {
+                    onClick = {
+                        reviewViewModel.addReview(rememberScope, movieId ,ReviewModifyModel(reviewText.value, rating.value, isAnonymous.value))
+                        openReviewDialog.value = false
+                        movieViewModel.updateMovieScreen(movieId)
+                    }) {
                     Text(
                         text = LocalContext.current.getString(R.string.review_dialog_save_btn_text),
                         fontFamily = ibmPlexSansFamily,

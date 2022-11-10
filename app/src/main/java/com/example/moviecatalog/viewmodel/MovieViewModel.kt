@@ -2,13 +2,16 @@ package com.example.moviecatalog.viewmodel
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesRepository
 import com.example.moviecatalog.network.movie.MovieRepository
+import com.example.moviecatalog.network.review.ReviewRepository
 import com.example.moviecatalog.network.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,41 +20,29 @@ import kotlinx.coroutines.launch
 private val movieRepository = MovieRepository()
 private val userRepository = UserRepository()
 private val favoriteMoviesRepository = FavoriteMoviesRepository()
+private val reviewRepository = ReviewRepository()
 
 class MovieViewModel(private val navController: NavController) : ViewModel() {
 
-    var user = mutableStateOf(
-        ProfileModel(
-            id = "1",
-            nickName = "123",
-            email = "123",
-            avatarLink = "123",
-            name = "123",
-            birthDate = "123",
-            gender = 0
-        )
-    )
-
-    var details = mutableStateOf(
-        MovieDetailsModel(
-            id = "2",
-            year = 2000,
-            time = 120,
-            ageLimit = 16
-        )
-    )
+    var myReviewExists = mutableStateOf(false)
 
     fun getMovieDetails(
         coroutineScope: CoroutineScope,
         context: Context,
-        movieId: String
+        movieId: String,
+        details: MutableState<MovieDetailsModel>,
+        user: MutableState<ProfileModel>
     ) {
-        coroutineScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.Main) {
             movieRepository.getMoviesDetails(movieId)
                 .collect { result ->
                     result.onSuccess {
                         launch(Dispatchers.Main) {
                             details.value = it
+                            details.value.reviews?.forEach {
+                                if (it.author.userId == user.value.id)
+                                    myReviewExists.value = true
+                            }
                         }
                     }.onFailure {
                         launch(Dispatchers.Main) {
@@ -68,9 +59,10 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
 
     fun getUser(
         coroutineScope: CoroutineScope,
+        user: MutableState<ProfileModel>,
         context: Context
     ) {
-        coroutineScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.Main) {
             userRepository.getProfile()
                 .collect { result ->
                     result.onSuccess {
@@ -99,7 +91,22 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         }
     }
 
+    fun updateMovieScreen(movieId: String) {
+        navController.popBackStack()
+        navController.navigate(Screen.MovieScreen.route + "/${movieId}")
+    }
+
     fun navigateToMainScreen() {
         navController.popBackStack()
+    }
+
+    fun deleteReview(
+        coroutineScope: CoroutineScope,
+        movieId: String,
+        id: String
+    ) {
+        coroutineScope.launch(Dispatchers.Main) {
+            reviewRepository.deleteReview(movieId, id)
+        }
     }
 }

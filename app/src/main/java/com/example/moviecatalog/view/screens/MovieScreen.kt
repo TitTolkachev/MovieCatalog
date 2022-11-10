@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
 import com.example.moviecatalog.network.dataclasses.models.GenreModel
+import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.network.dataclasses.models.ReviewModel
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
@@ -40,8 +41,7 @@ import com.example.moviecatalog.util.loadPicture
 import com.example.moviecatalog.viewmodel.MovieViewModel
 import com.example.moviecatalog.viewmodel.ReviewViewModel
 import com.google.accompanist.flowlayout.FlowRow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlin.reflect.KFunction2
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,22 +58,41 @@ fun MovieScreen(navController: NavController, movieId: String) {
     val context = LocalContext.current
     val rememberScope = rememberCoroutineScope()
 
-    val callInitFunctions = remember {
-        mutableStateOf(true)
+    val details = remember {
+        mutableStateOf(
+            MovieDetailsModel(
+                id = "2",
+                year = 2000,
+                time = 120,
+                ageLimit = 16
+            )
+        )
     }
-    if (callInitFunctions.value) {
-        movieViewModel.getMovieDetails(rememberScope, context, movieId)
-        movieViewModel.getUser(rememberScope, context)
-        callInitFunctions.value = false
+    val user = remember {
+        mutableStateOf(
+            ProfileModel(
+                id = "1",
+                nickName = "123",
+                email = "123",
+                avatarLink = "123",
+                name = "123",
+                birthDate = "123",
+                gender = 0
+            )
+        )
     }
 
-    val user = remember {
-        movieViewModel.user.value
+    LaunchedEffect(key1 = true)
+    {
+        launch(Dispatchers.Main) {
+            movieViewModel.getUser(rememberScope, user, context)
+            movieViewModel.getMovieDetails(rememberScope, context, movieId, details, user)
+        }
     }
 
     val openReviewDialog = remember { mutableStateOf(false) }
     if (openReviewDialog.value)
-        ReviewDialog(openReviewDialog, ReviewViewModel(movieViewModel))
+        ReviewDialog(openReviewDialog, ReviewViewModel(movieViewModel), movieViewModel, movieId)
 
     val state = rememberLazyListState()
 
@@ -89,7 +108,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
             item {
                 Box {
                     val image = loadPicture(
-                        url = movieViewModel.details.value.poster.toString(), LocalContext.current,
+                        url = details.value.poster.toString(), LocalContext.current,
                         defaultImage = DEFAULT_IMAGE
                     ).value
                     if (image != null) {
@@ -106,7 +125,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
                                 alpha
                         )
                     }
-                    movieViewModel.details.value.name?.let {
+                    details.value.name?.let {
                         Text(
                             text = it,
                             modifier = Modifier
@@ -123,7 +142,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
                 }
             }
             item {
-                movieViewModel.details.value.description?.let {
+                details.value.description?.let {
                     Text(
                         modifier = Modifier
                             .padding(16.dp)
@@ -155,9 +174,9 @@ fun MovieScreen(navController: NavController, movieId: String) {
                             Column {
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_year),
-                                    movieViewModel.details.value.year.toString()
+                                    details.value.year.toString()
                                 )
-                                movieViewModel.details.value.country?.let {
+                                details.value.country?.let {
                                     AboutMovieRowSample(
                                         LocalContext.current.getString(R.string.movie_country),
                                         it
@@ -165,15 +184,15 @@ fun MovieScreen(navController: NavController, movieId: String) {
                                 }
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_time),
-                                    movieViewModel.details.value.time.toString() + " мин."
+                                    details.value.time.toString() + " мин."
                                 )
-                                movieViewModel.details.value.tagline?.let {
+                                details.value.tagline?.let {
                                     AboutMovieRowSample(
                                         LocalContext.current.getString(R.string.movie_tagline),
                                         it
                                     )
                                 }
-                                movieViewModel.details.value.director?.let {
+                                details.value.director?.let {
                                     AboutMovieRowSample(
                                         LocalContext.current.getString(R.string.movie_director),
                                         it
@@ -181,15 +200,15 @@ fun MovieScreen(navController: NavController, movieId: String) {
                                 }
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_budget),
-                                    "\$" + movieViewModel.details.value.budget.toString()
+                                    "\$" + details.value.budget.toString()
                                 )
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_fees),
-                                    "\$" + movieViewModel.details.value.fees.toString()
+                                    "\$" + details.value.fees.toString()
                                 )
                                 AboutMovieRowSample(
                                     LocalContext.current.getString(R.string.movie_age_limit),
-                                    "${movieViewModel.details.value.ageLimit}+"
+                                    "${details.value.ageLimit}+"
                                 )
                             }
                         }
@@ -205,8 +224,8 @@ fun MovieScreen(navController: NavController, movieId: String) {
                         LocalContext.current.getString(R.string.genres_block_text), Modifier
                             .padding(bottom = 8.dp)
                     )
-                    if (movieViewModel.details.value.genres != null) {
-                        MovieGenresItems(movieViewModel.details.value.genres!!)
+                    if (details.value.genres != null) {
+                        MovieGenresItems(details.value.genres!!)
                     }
                 }
             }
@@ -224,7 +243,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
                             LocalContext.current.getString(R.string.reviews_block_text), Modifier
                                 .padding(bottom = 8.dp)
                         )
-                        if (!checkIfThereIsMyReview(movieViewModel.details.value.reviews, user))
+                        if (!movieViewModel.myReviewExists.value)
                             Image(
                                 painter = painterResource(id = R.drawable.plus_icon),
                                 contentDescription = LocalContext.current.getString(R.string.add_review_icon_content_description),
@@ -233,7 +252,13 @@ fun MovieScreen(navController: NavController, movieId: String) {
                                     .clickable { openReviewDialog.value = true }
                             )
                     }
-                    MovieReviewsItems(movieViewModel.details.value.reviews, user)
+                    MovieReviewsItems(
+                        details.value.reviews,
+                        user.value,
+                        movieViewModel,
+                        movieId,
+                        rememberScope
+                    )
                 }
             }
         }
@@ -248,7 +273,7 @@ fun MovieScreen(navController: NavController, movieId: String) {
         )
 
         if (isTopPanelVisible) {
-            movieViewModel.details.value.name?.let {
+            details.value.name?.let {
                 TopMovieBar(
                     movieViewModel::navigateToMainScreen,
                     movieViewModel::addMovieToFavourites,
@@ -317,10 +342,16 @@ private fun TopMovieBar(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun MovieReviewsItems(MovieReviews: MutableList<ReviewModel>?, user: ProfileModel) {
+private fun MovieReviewsItems(
+    MovieReviews: MutableList<ReviewModel>?,
+    user: ProfileModel,
+    movieViewModel: MovieViewModel,
+    movieId: String,
+    coroutineScope: CoroutineScope
+) {
     Column(modifier = Modifier) {
         MovieReviews?.forEach {
-            MovieReviewsItem(it, user)
+            MovieReviewsItem(it, user, movieViewModel, movieId, coroutineScope)
         }
     }
 }
@@ -328,7 +359,13 @@ private fun MovieReviewsItems(MovieReviews: MutableList<ReviewModel>?, user: Pro
 @OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun MovieReviewsItem(review: ReviewModel, user: ProfileModel) {
+private fun MovieReviewsItem(
+    review: ReviewModel,
+    user: ProfileModel,
+    movieViewModel: MovieViewModel,
+    movieId: String,
+    coroutineScope: CoroutineScope
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -428,12 +465,19 @@ private fun MovieReviewsItem(review: ReviewModel, user: ProfileModel) {
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .size(24.dp)
+                                .clickable {
+
+                                }
                         )
                         Image(
                             painter = painterResource(id = R.drawable.redx),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(24.dp)
+                                .clickable {
+                                    movieViewModel.deleteReview(coroutineScope, movieId, review.id)
+                                    movieViewModel.updateMovieScreen(movieId)
+                                }
                         )
                     }
             }
@@ -545,16 +589,4 @@ private fun ReviewTextSample(text: String) {
         fontSize = 14.sp,
         color = MaterialTheme.colorScheme.onSecondary
     )
-}
-
-private fun checkIfThereIsMyReview(
-    movieReviews: MutableList<ReviewModel>?,
-    user: ProfileModel
-): Boolean {
-    var res = false
-    movieReviews?.forEach {
-        if (it.author.userId == user.id)
-            res = true
-    }
-    return res
 }
