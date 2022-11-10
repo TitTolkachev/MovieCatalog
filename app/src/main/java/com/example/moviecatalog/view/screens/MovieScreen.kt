@@ -29,10 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.moviecatalog.R
-import com.example.moviecatalog.network.dataclasses.models.GenreModel
-import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
-import com.example.moviecatalog.network.dataclasses.models.ProfileModel
-import com.example.moviecatalog.network.dataclasses.models.ReviewModel
+import com.example.moviecatalog.network.dataclasses.models.*
 import com.example.moviecatalog.ui.theme.ibmPlexSansFamily
 import com.example.moviecatalog.ui.theme.montserratFamily
 import com.example.moviecatalog.util.DEFAULT_IMAGE
@@ -82,17 +79,38 @@ fun MovieScreen(navController: NavController, movieId: String) {
         )
     }
 
+    val myReview = remember {
+        mutableStateOf(
+            ReviewModifyModel(
+                "",
+                0,
+                false
+            )
+        )
+    }
+
+    val myReviewId = remember {
+        mutableStateOf(null as String?)
+    }
+
     LaunchedEffect(key1 = true)
     {
         launch(Dispatchers.Main) {
             movieViewModel.getUser(rememberScope, user, context)
-            movieViewModel.getMovieDetails(rememberScope, context, movieId, details, user)
+            movieViewModel.getMovieDetails(rememberScope, context, movieId, details, user, myReview, myReviewId)
         }
     }
 
     val openReviewDialog = remember { mutableStateOf(false) }
     if (openReviewDialog.value)
-        ReviewDialog(openReviewDialog, ReviewViewModel(movieViewModel), movieViewModel, movieId)
+        ReviewDialog(
+            openReviewDialog,
+            ReviewViewModel(),
+            movieViewModel,
+            movieId,
+            myReview,
+            myReviewId
+        )
 
     val state = rememberLazyListState()
 
@@ -257,7 +275,8 @@ fun MovieScreen(navController: NavController, movieId: String) {
                         user.value,
                         movieViewModel,
                         movieId,
-                        rememberScope
+                        rememberScope,
+                        openReviewDialog
                     )
                 }
             }
@@ -347,11 +366,12 @@ private fun MovieReviewsItems(
     user: ProfileModel,
     movieViewModel: MovieViewModel,
     movieId: String,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    openReviewDialog: MutableState<Boolean>
 ) {
     Column(modifier = Modifier) {
         MovieReviews?.forEach {
-            MovieReviewsItem(it, user, movieViewModel, movieId, coroutineScope)
+            MovieReviewsItem(it, user, movieViewModel, movieId, coroutineScope, openReviewDialog)
         }
     }
 }
@@ -364,7 +384,8 @@ private fun MovieReviewsItem(
     user: ProfileModel,
     movieViewModel: MovieViewModel,
     movieId: String,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    openReviewDialog: MutableState<Boolean>
 ) {
     Card(
         modifier = Modifier
@@ -466,7 +487,7 @@ private fun MovieReviewsItem(
                                 .padding(end = 8.dp)
                                 .size(24.dp)
                                 .clickable {
-
+                                    openReviewDialog.value = true
                                 }
                         )
                         Image(

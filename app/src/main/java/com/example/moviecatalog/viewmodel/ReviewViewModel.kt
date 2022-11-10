@@ -9,11 +9,7 @@ import kotlinx.coroutines.launch
 
 private val reviewRepository = ReviewRepository()
 
-class ReviewViewModel(private val movieViewModel: MovieViewModel) : ViewModel() {
-
-    val reviewText = ""
-    val rating = 0
-    val isAnonymous = false
+class ReviewViewModel() : ViewModel() {
 
     fun addReview(
         coroutineScope: CoroutineScope,

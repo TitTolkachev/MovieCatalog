@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
+import com.example.moviecatalog.network.dataclasses.models.ReviewModifyModel
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesRepository
 import com.example.moviecatalog.network.movie.MovieRepository
 import com.example.moviecatalog.network.review.ReviewRepository
@@ -31,7 +32,9 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         context: Context,
         movieId: String,
         details: MutableState<MovieDetailsModel>,
-        user: MutableState<ProfileModel>
+        user: MutableState<ProfileModel>,
+        myReview: MutableState<ReviewModifyModel>,
+        myReviewId: MutableState<String?>
     ) {
         coroutineScope.launch(Dispatchers.Main) {
             movieRepository.getMoviesDetails(movieId)
@@ -39,9 +42,16 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                     result.onSuccess {
                         launch(Dispatchers.Main) {
                             details.value = it
-                            details.value.reviews?.forEach {
-                                if (it.author.userId == user.value.id)
+                            details.value.reviews?.forEach { it ->
+                                if (it.author.userId == user.value.id) {
+                                    myReview.value = ReviewModifyModel(
+                                        it.reviewText.toString(),
+                                        it.rating,
+                                        it.isAnonymous
+                                    )
+                                    myReviewId.value = it.id
                                     myReviewExists.value = true
+                                }
                             }
                         }
                     }.onFailure {
@@ -105,7 +115,7 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         movieId: String,
         id: String
     ) {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(Dispatchers.IO) {
             reviewRepository.deleteReview(movieId, id)
         }
     }

@@ -33,17 +33,19 @@ fun ReviewDialog(
     openReviewDialog: MutableState<Boolean>,
     reviewViewModel: ReviewViewModel,
     movieViewModel: MovieViewModel,
-    movieId: String
+    movieId: String,
+    myReview: MutableState<ReviewModifyModel>,
+    reviewId: MutableState<String?>
 ) {
 
     val reviewText = remember {
-        mutableStateOf(reviewViewModel.reviewText)
+        mutableStateOf(myReview.value.reviewText)
     }
     val isAnonymous = remember {
-        mutableStateOf(reviewViewModel.isAnonymous)
+        mutableStateOf(myReview.value.isAnonymous)
     }
     val rating = remember {
-        mutableStateOf(reviewViewModel.rating)
+        mutableStateOf(myReview.value.rating)
     }
 
     val rememberScope = rememberCoroutineScope()
@@ -167,7 +169,10 @@ fun ReviewDialog(
                         .fillMaxWidth()
                         .height(44.dp),
                     onClick = {
-                        reviewViewModel.addReview(rememberScope, movieId ,ReviewModifyModel(reviewText.value, rating.value, isAnonymous.value))
+                        if(myReview.value.reviewText == "")
+                            reviewViewModel.addReview(rememberScope, movieId, ReviewModifyModel(reviewText.value, rating.value, isAnonymous.value))
+                        else
+                            reviewViewModel.editReview(rememberScope, movieId, reviewId.value!!, ReviewModifyModel(reviewText.value, rating.value, isAnonymous.value))
                         openReviewDialog.value = false
                         movieViewModel.updateMovieScreen(movieId)
                     }) {
