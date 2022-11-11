@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.moviecatalog.network.dataclasses.models.MovieElementModel
 import com.example.moviecatalog.util.DEFAULT_IMAGE
 import com.example.moviecatalog.util.loadPicture
@@ -47,16 +49,15 @@ import kotlin.math.pow
 @Composable
 fun MainScreen(navController: NavController) {
 
-    val mainViewModel = remember {
-        MainViewModel(navController)
-    }
-
     val context = LocalContext.current
     val rememberScope = rememberCoroutineScope()
 
-    val galleryMovies = remember {
-        mainViewModel.galleryMovies
+    val mainViewModel = remember {
+        MainViewModel(navController, rememberScope)
     }
+
+    val galleryMovies: LazyPagingItems<MovieElementModel> = mainViewModel.movie.collectAsLazyPagingItems()
+
     val favouriteMovies = remember {
         mutableStateListOf<MovieElementModel>()
     }
@@ -65,7 +66,6 @@ fun MainScreen(navController: NavController) {
         mutableStateOf(true)
     }
     if (callInitFunctions.value) {
-        mainViewModel.getGalleryMovies(rememberScope, context)
         mainViewModel.getFavouriteMovies(favouriteMovies, rememberScope, context)
         callInitFunctions.value = false
     }
@@ -82,10 +82,10 @@ fun MainScreen(navController: NavController) {
                 .padding(bottom = 68.dp)
         ) {
             item {
-                if (galleryMovies.isNotEmpty()) {
+                if (galleryMovies.itemCount != 0) {
                     Box {
                         val image = loadPicture(
-                            url = galleryMovies[0].poster.toString(), LocalContext.current,
+                            url = galleryMovies[0]?.poster.toString(), LocalContext.current,
                             defaultImage = DEFAULT_IMAGE
                         ).value
                         if (image != null) {
@@ -108,7 +108,8 @@ fun MainScreen(navController: NavController) {
                             contentScale = ContentScale.FillBounds
                         )
                         Button(
-                            onClick = { mainViewModel.navigateToMovie(galleryMovies[0]) },
+                            onClick = { galleryMovies[0]
+                                ?.let { mainViewModel.navigateToMovie(it) } },
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
                                 .padding(top = 244.dp)
@@ -199,10 +200,10 @@ fun MainScreen(navController: NavController) {
                 )
             }
 
-            itemsIndexed(galleryMovies) { index, item ->
-                if (index != 0)
-                    GalleryItem(item, mainViewModel::navigateToMovie)
-            }
+            for (i in 1 until galleryMovies.itemCount)
+                item {
+                    galleryMovies[i]?.let { GalleryItem(it, mainViewModel::navigateToMovie) }
+                }
         }
 
         Box(
@@ -299,7 +300,7 @@ private fun GalleryItem(
             ) {
                 Text(
                     text = if (item.reviews.isNotEmpty())
-                        String.format("%.1f", rating)
+                        String.format("%.1f", rating).replace(',','.')
                     else
                         "-",
                     modifier = Modifier
