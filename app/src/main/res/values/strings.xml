@@ -64,4 +64,7 @@
 
     <string name="gender_picker_male_text">Мужчина</string>
     <string name="gender_picker_female_text">Женщина</string>
+
+    <string name="toast_empty_fields_found">Обнаружены незаполненные поля ввода</string>
+    <string name="toast_invalid_nickname_or_password">Неверное имя пользователя или пароль</string>
 </resources>

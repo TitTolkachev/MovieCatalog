@@ -1,6 +1,7 @@
 package com.example.moviecatalog.view.screens
 
 import android.content.res.Resources
+import android.widget.Toast
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -99,11 +100,19 @@ fun SignInScreen(navController: NavController) {
                 isValidInput,
                 LocalContext.current.getString(R.string.sign_in_sign_in_btn_text)
             ) {
-                signInViewModel.signIn(
-                    rememberScope,
-                    LoginRequestBody(login.value, password.value),
-                    context
-                )
+                if (login.value.trim(' ') != "" && password.value.trim(' ') != "")
+                    signInViewModel.signIn(
+                        rememberScope,
+                        LoginRequestBody(login.value, password.value),
+                        context
+                    )
+                else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_empty_fields_found),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
             Button(
                 onClick = {

@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.R
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.auth.AuthRepository
@@ -37,7 +38,7 @@ class SignInViewModel(private val navController: NavController) : ViewModel() {
                         launch(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "Неверное имя пользователя или пароль",
+                                context.getString(R.string.toast_invalid_nickname_or_password),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
