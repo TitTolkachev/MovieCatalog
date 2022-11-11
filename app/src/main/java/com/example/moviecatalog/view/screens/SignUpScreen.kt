@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
+import android.text.TextUtils
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -245,6 +247,9 @@ private fun calculateTopPadding(image: Painter): Dp {
     return neededHeight.dp + extraPadding
 }
 
+fun String.isEmailValid(): Boolean {
+    return !TextUtils.isEmpty(this) && android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()
+}
 
 @Composable
 fun BottomButtons(
@@ -266,11 +271,54 @@ fun BottomButtons(
             LocalContext.current.getString(R.string.sign_up_sign_up_btn_text)
         ) {
             if (isClickable) {
-                signUpFun(
-                    scopeRemember,
-                    registerRequestBody,
-                    context
-                )
+                if (registerRequestBody.userName.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_login),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (registerRequestBody.email.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_email),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (!registerRequestBody.email.trim(' ').isEmailValid())
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_email_check),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (registerRequestBody.name.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (registerRequestBody.password.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_password),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (registerRequestBody.password.trim(' ').length < 6)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_password_length),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (registerRequestBody.birthDate.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_birthdate),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else
+                    signUpFun(
+                        scopeRemember,
+                        registerRequestBody,
+                        context
+                    )
             }
         }
         Button(

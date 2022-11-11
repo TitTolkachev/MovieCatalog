@@ -67,4 +67,12 @@
 
     <string name="toast_empty_fields_found">Обнаружены незаполненные поля ввода</string>
     <string name="toast_invalid_nickname_or_password">Неверное имя пользователя или пароль</string>
+    <string name="toast_invalid_input">Указаны некорректные данные</string>
+    <string name="toast_invalid_login">Пропущено поле Логин</string>
+    <string name="toast_invalid_email">Пропущено поле E-mail</string>
+    <string name="toast_invalid_email_check">Указанный E-mail не прошел валидацию</string>
+    <string name="toast_invalid_name">Пропущено поле Имя</string>
+    <string name="toast_invalid_password">Пропущено поле Пароль</string>
+    <string name="toast_invalid_password_length">Минимальная длина пароля 6 символов</string>
+    <string name="toast_invalid_birthdate">Пропущено поле Дата рождения</string>
 </resources>

@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.R
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.auth.AuthRepository
@@ -47,7 +48,7 @@ class SignUpViewModel(private val navController: NavController) : ViewModel() {
                         }
                     }.onFailure {
                         launch(Dispatchers.Main) {
-                            Toast.makeText(context, "Invalid Input", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.toast_invalid_input), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
