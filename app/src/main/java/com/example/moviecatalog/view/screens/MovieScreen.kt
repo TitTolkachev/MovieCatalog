@@ -360,22 +360,28 @@ private fun TopMovieBar(
             color = MaterialTheme.colorScheme.onSecondary,
             maxLines = 1
         )
-        Image(
-            painter = painterResource(
-                id = if (isMovieLiked.value)
-                    R.drawable.heart
-                else
-                    R.drawable.unfilled_heart
-            ),
-            contentDescription =
-            LocalContext.current.getString(R.string.heart_icon_content_description),
+        Box(
             modifier = Modifier
-                .size(24.dp)
+                .size(36.dp)
                 .clickable {
                     movieFun(movieId, coroutineScope)
                     isMovieLiked.value = !isMovieLiked.value
-                }
-        )
+                }) {
+            Image(
+                painter = painterResource(
+                    id = if (isMovieLiked.value)
+                        R.drawable.heart
+                    else
+                        R.drawable.unfilled_heart
+                ),
+                contentDescription =
+                LocalContext.current.getString(R.string.heart_icon_content_description),
+                modifier = Modifier
+                    .width(20.dp)
+                    .height(18.dp)
+                    .align(Alignment.Center)
+            )
+        }
     }
 }
 
