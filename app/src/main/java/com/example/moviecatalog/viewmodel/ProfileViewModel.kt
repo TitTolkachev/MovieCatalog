@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.R
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.Network
@@ -66,7 +67,7 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
                         launch(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "Не удалось получить данные о пользователе",
+                                context.getString(R.string.toast_profile_data_not_found),
                                 Toast.LENGTH_SHORT
                             ).show()
 

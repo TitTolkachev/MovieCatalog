@@ -75,4 +75,5 @@
     <string name="toast_invalid_password">Пропущено поле Пароль</string>
     <string name="toast_invalid_password_length">Минимальная длина пароля 6 символов</string>
     <string name="toast_invalid_birthdate">Пропущено поле Дата рождения</string>
+    <string name="toast_profile_data_not_found">Не удалось получить данные о пользователе</string>
 </resources>

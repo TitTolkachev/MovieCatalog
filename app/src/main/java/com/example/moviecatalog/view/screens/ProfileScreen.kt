@@ -1,6 +1,7 @@
 package com.example.moviecatalog.view.screens
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -91,7 +92,6 @@ fun ProfileScreen(navController: NavController) {
 
     val isValidInput = (email.value != "") &&
             (name.value != "") &&
-            (avatarLink.value != "") &&
             (datePicked.value != "") &&
             (isMaleChosen.value || isFemaleChosen.value)
     Box(
@@ -158,17 +158,36 @@ fun ProfileScreen(navController: NavController) {
                 isValidInput = isValidInput,
                 buttonText = LocalContext.current.getString(R.string.profile_save_btn_text)
             ) {
-                profileViewModel.saveProfileChanges(
-                    rememberScope, ProfileModel(
-                        profileViewModel.user.value.id,
-                        profileViewModel.user.value.nickName,
-                        email.value,
-                        avatarLink.value,
-                        name.value,
-                        birthDate.value,
-                        if (isMaleChosen.value) 0 else 1
+                if (email.value.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_email),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (!email.value.trim(' ').isEmailValid())
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_email_check),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else if (name.value.trim(' ') == "")
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_invalid_name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                else
+                    profileViewModel.saveProfileChanges(
+                        rememberScope, ProfileModel(
+                            profileViewModel.user.value.id,
+                            profileViewModel.user.value.nickName,
+                            email.value,
+                            avatarLink.value,
+                            name.value,
+                            birthDate.value,
+                            if (isMaleChosen.value) 0 else 1
+                        )
                     )
-                )
             }
             Button(
                 onClick = {
@@ -191,7 +210,6 @@ fun ProfileScreen(navController: NavController) {
                 )
             }
         }
-
 
         Box(
             modifier = Modifier
