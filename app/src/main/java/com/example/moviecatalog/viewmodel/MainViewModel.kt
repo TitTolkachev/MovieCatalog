@@ -9,7 +9,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
+import com.example.moviecatalog.network.Network
+import com.example.moviecatalog.network.auth.AuthRepository
 import com.example.moviecatalog.network.dataclasses.models.MovieElementModel
 import com.example.moviecatalog.network.favoritemovies.FavoriteMoviesRepository
 import com.example.moviecatalog.paging.MovieSource
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 private val favoriteMoviesRepository = FavoriteMoviesRepository()
+private val authRepository = AuthRepository()
 
 class MainViewModel(
     private val navController: NavController,
@@ -46,6 +50,13 @@ class MainViewModel(
                                 "Избранные изображения не удалось загрузить",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            coroutineScope.launch(Dispatchers.IO) {
+                                authRepository.logout()
+                                StoreAccessToken(context).saveAccessToken("")
+                            }
+                            Network.token = ""
+                            navigateToSignInScreen()
                         }
                     }
                 }
@@ -62,6 +73,12 @@ class MainViewModel(
 
     fun navigateToMovie(movieElementModel: MovieElementModel) {
         navController.navigate(Screen.MovieScreen.route + "/${movieElementModel.id}")
+    }
+
+    private fun navigateToSignInScreen() {
+        navController.popBackStack()
+        navController.popBackStack()
+        navController.navigate(Screen.SignIn.route)
     }
 
     fun removeMovieFromFavourites(

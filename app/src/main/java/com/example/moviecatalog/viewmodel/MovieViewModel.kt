@@ -6,7 +6,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
+import com.example.moviecatalog.network.Network
+import com.example.moviecatalog.network.auth.AuthRepository
 import com.example.moviecatalog.network.dataclasses.models.MovieDetailsModel
 import com.example.moviecatalog.network.dataclasses.models.ProfileModel
 import com.example.moviecatalog.network.dataclasses.models.ReviewModifyModel
@@ -22,6 +25,7 @@ private val movieRepository = MovieRepository()
 private val userRepository = UserRepository()
 private val favoriteMoviesRepository = FavoriteMoviesRepository()
 private val reviewRepository = ReviewRepository()
+private val authRepository = AuthRepository()
 
 class MovieViewModel(private val navController: NavController) : ViewModel() {
 
@@ -61,6 +65,13 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                                 "Не удалось загрузить фильм",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            coroutineScope.launch(Dispatchers.IO) {
+                                authRepository.logout()
+                                StoreAccessToken(context).saveAccessToken("")
+                            }
+                            Network.token = ""
+                            navigateToSignInScreen()
                         }
                     }
                 }
@@ -86,6 +97,13 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                                 "Не удалось получить данные о пользователе",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            coroutineScope.launch(Dispatchers.IO) {
+                                authRepository.logout()
+                                StoreAccessToken(context).saveAccessToken("")
+                            }
+                            Network.token = ""
+                            navigateToSignInScreen()
                         }
                     }
                 }
@@ -108,6 +126,12 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
 
     fun navigateToMainScreen() {
         navController.popBackStack()
+    }
+
+    private fun navigateToSignInScreen() {
+        navController.popBackStack()
+        navController.popBackStack()
+        navController.navigate(Screen.SignIn.route)
     }
 
     fun deleteReview(

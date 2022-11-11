@@ -69,6 +69,13 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
                                 "Не удалось получить данные о пользователе",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            coroutineScope.launch(Dispatchers.IO) {
+                                authRepository.logout()
+                                StoreAccessToken(context).saveAccessToken("")
+                            }
+                            Network.token = ""
+                            navigateToSignInScreen()
                         }
                     }
                 }
@@ -96,7 +103,7 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
 
     fun saveProfileChanges(coroutineScope: CoroutineScope, body: ProfileModel) {
 
-        coroutineScope.launch (Dispatchers.IO){
+        coroutineScope.launch(Dispatchers.IO) {
             userRepository.putProfile(body)
         }
 
