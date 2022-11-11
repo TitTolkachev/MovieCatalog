@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.moviecatalog.R
 import com.example.moviecatalog.datastore.StoreAccessToken
 import com.example.moviecatalog.navigation.Screen
 import com.example.moviecatalog.network.Network
@@ -62,7 +63,7 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                         launch(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "Не удалось загрузить фильм",
+                                context.getString(R.string.toast_not_managed_to_load_movie),
                                 Toast.LENGTH_SHORT
                             ).show()
 
@@ -94,7 +95,7 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
                         launch(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "Не удалось получить данные о пользователе",
+                                context.getString(R.string.toast_not_managed_to_load_users_data),
                                 Toast.LENGTH_SHORT
                             ).show()
 
@@ -110,12 +111,41 @@ class MovieViewModel(private val navController: NavController) : ViewModel() {
         }
     }
 
+    fun checkIsMovieInFavourites(
+        isMovieLiked: MutableState<Boolean>,
+        movieId: String,
+        coroutineScope: CoroutineScope
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            favoriteMoviesRepository.getMovies()
+                .collect { result ->
+                    result.onSuccess {
+                        launch(Dispatchers.Main) {
+                            it.movies.forEach { item ->
+                                if (item.id == movieId)
+                                    isMovieLiked.value = true
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
     fun addMovieToFavourites(
         movieId: String,
         coroutineScope: CoroutineScope
     ) {
         coroutineScope.launch(Dispatchers.IO) {
             favoriteMoviesRepository.addMovie(movieId)
+        }
+    }
+
+    fun deleteMovieFromFavourites(
+        movieId: String,
+        coroutineScope: CoroutineScope
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            favoriteMoviesRepository.deleteMovie(movieId)
         }
     }
 

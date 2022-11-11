@@ -93,6 +93,13 @@ fun MovieScreen(navController: NavController, movieId: String) {
         mutableStateOf(null as String?)
     }
 
+    val isMovieLiked = remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = true) {
+        movieViewModel.checkIsMovieInFavourites(isMovieLiked, movieId, rememberScope)
+    }
+
     LaunchedEffect(key1 = true)
     {
         launch(Dispatchers.Main) {
@@ -303,10 +310,12 @@ fun MovieScreen(navController: NavController, movieId: String) {
             details.value.name?.let {
                 TopMovieBar(
                     movieViewModel::navigateToMainScreen,
-                    movieViewModel::addMovieToFavourites,
+                    if (!isMovieLiked.value) movieViewModel::addMovieToFavourites
+                    else movieViewModel::deleteMovieFromFavourites,
                     movieId,
                     rememberScope,
-                    it
+                    it,
+                    isMovieLiked
                 )
             }
         }
@@ -316,10 +325,11 @@ fun MovieScreen(navController: NavController, movieId: String) {
 @Composable
 private fun TopMovieBar(
     navigateToMainScreenFun: () -> Unit,
-    addMovie: KFunction2<String, CoroutineScope, Unit>,
+    movieFun: KFunction2<String, CoroutineScope, Unit>,
     movieId: String,
     coroutineScope: CoroutineScope,
-    movieName: String
+    movieName: String,
+    isMovieLiked: MutableState<Boolean>
 ) {
     Row(
         modifier = Modifier
@@ -351,17 +361,19 @@ private fun TopMovieBar(
             maxLines = 1
         )
         Image(
-            painter = painterResource(id = R.drawable.unfilled_heart),
-//            if()
-//                R.drawable.unfilled_heart
-//            else
-//                R.drawable.heart
-//            ),
-            contentDescription = LocalContext.current.getString(R.string.heart_icon_content_description),
+            painter = painterResource(
+                id = if (isMovieLiked.value)
+                    R.drawable.heart
+                else
+                    R.drawable.unfilled_heart
+            ),
+            contentDescription =
+            LocalContext.current.getString(R.string.heart_icon_content_description),
             modifier = Modifier
                 .size(24.dp)
                 .clickable {
-                    addMovie(movieId, coroutineScope)
+                    movieFun(movieId, coroutineScope)
+                    isMovieLiked.value = !isMovieLiked.value
                 }
         )
     }
